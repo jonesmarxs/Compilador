@@ -33,6 +33,7 @@ ID {LETRA}({LETRA}|{NUM})*
 
 "read"		{yylval.label = yytext; return TK_READ;}
 "print"		{yylval.label = yytext; return TK_PRINT;}
+"if"		{yylval.label = yytext; return TK_IF;}
 
 [\'].*[\'] { yylval.label = yytext; return TK_CHAR; }
 [\"].*[\"] 		{ yylval.label = yytext; return TK_STRING; }

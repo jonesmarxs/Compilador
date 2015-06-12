@@ -16,6 +16,14 @@ int main(void)
 	strcat(temp4,temp1);
 	strcat(temp4,temp3);
 	cout << temp4 << endl;
+	int temp5 = 1;
+	if(!temp5) goto FIM;
+	float temp6;
+	temp6 = 1.2;
+	float temp7;
+	temp7 = temp6;
+FIM:
+	cout << temp7 << endl;
 	return 0;
 }
 

@@ -33,7 +33,7 @@ string formaExpressao(string operando, string resultado, string label, string la
 
 %token TK_NUM_INT TK_NUM_FLOAT TK_TRUE TK_FALSE TK_CHAR TK_STRING
 %token TK_MAIN TK_ID TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_BOOL TK_TIPO_CHAR TK_TIPO_STRING 
-%token TK_FIM TK_ERROR TK_PRINT TK_READ
+%token TK_FIM TK_ERROR TK_PRINT TK_READ TK_IF
 %token TK_MAIOR TK_MENOR TK_MAIORIGUAL TK_MENORIGUAL TK_IGUAL TK_DIFERENTE
 %token TK_AND TK_OR TK_NEGADO
 
@@ -104,7 +104,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				if(tabelaTemp[$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tint " + $$.label + " = " + verificaCastAtribuicao($1.label, tabelaTemp[$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $2.traducao + $4.traducao + adicional;
 			}
@@ -116,7 +116,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				if(tabelaTemp[$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tfloat " + $$.label + " = " + verificaCastAtribuicao($1.label, tabelaTemp[$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tfloat " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $2.traducao + $4.traducao + adicional;
 			}
@@ -398,12 +398,12 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_NUM_INT {
 
 				$$.label = criaAtributo("int", $1.label);
-				$$.traducao = "\tint " + $$.label + " = " + $1.label + ";\n";
+				$$.traducao = "\tint " + $$.label + ";\n\t" + $$.label + " = " + $1.label + ";\n";
 			}
 			| TK_NUM_FLOAT {
 
 				$$.label = criaAtributo("float", $1.label);
-				$$.traducao = "\tfloat " + $$.label + " = " + $1.label + ";\n";
+				$$.traducao = "\tfloat " + $$.label + ";\n\t" + $$.label + " = " + $1.label + ";\n";
 			}
 			| TK_CHAR {
 
@@ -458,8 +458,17 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-			| BLOCO
-			| ;
+			| TK_IF '(' E ')' BLOCO
+			{
+				if (tabelaTemp[$3.label].tipo == "bool")
+				{
+					string adicional = "\tif(!" + tabelaTemp[$3.label].label + ") goto FIM;\n";					
+					$$.traducao = $3.traducao +adicional+ $5.traducao+"FIM:\n";
+					//cout << $$.traducao << endl;
+				}
+				else
+					yyerror("ERRO: OPERACAO INVALIDA");
+			};
 %%
 
 #include "lex.yy.c"
