@@ -1,10 +1,12 @@
 int main()
 {	
-	string a = "teste";
-	string b = "1";
-	print a . b;
-	if(true){
-		float i = 1.2;
+	int a = 2;
+	int b;
+	b = a;
+	print a + b;
+	if( a < b ){
+		int c = 1;
+		print a;
 	}
-	print i;
+	print c;
 }

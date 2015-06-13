@@ -17,17 +17,19 @@ typedef struct atributos
 	string tamanho;
 } Atributos;
 
-map <string, Atributos> tabelaVariaveis;
-map <string, Atributos> tabelaTemp;
+map <string, Atributos> tabelaTemp[10];
+int contexto = 0;
+//map <string, Atributos> tabelaVariaveis;
 
 int yylex(void);
 void yyerror(string);
 string criaLabel();
-bool procuraTabelaVariaveis(string variavel);
+bool procuraTabelaTemp(string variavel);
 string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB);
 string criaAtributo(string tipo, string traducao);
 string verificaCastAtribuicao(string tipo1, string tipo2);
 string formaExpressao(string operando, string resultado, string label, string label1, string label2);
+int retornaContextoVariavel(string variavel);
 
 %}
 
@@ -58,9 +60,10 @@ S 			: TK_TIPO_INT TK_MAIN '(' ')' BLOCO {
 			} ;
 
 BLOCO		: '{' COMANDOS '}' {
-
+				contexto++;
 				$$.traducao = $2.traducao;
-			} ;
+
+			};
 
 COMANDOS	: E  COMANDOS {
 
@@ -101,10 +104,10 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if(tabelaTemp[$4.label].tipo == "bool")
+				if(tabelaTemp[contexto][$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[contexto][$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $2.traducao + $4.traducao + adicional;
 			}
@@ -113,10 +116,10 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if(tabelaTemp[$4.label].tipo == "bool")
+				if(tabelaTemp[contexto][$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tfloat " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tfloat " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[contexto][$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $2.traducao + $4.traducao + adicional;
 			}
@@ -125,10 +128,10 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if(tabelaTemp[$4.label].tipo == "bool")
+				if(tabelaTemp[contexto][$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tchar " + $$.label + " = " + verificaCastAtribuicao($1.label, tabelaTemp[$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tchar " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[contexto][$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $1.traducao + $4.traducao + adicional;
 			}
@@ -137,13 +140,11 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 					
-				if(tabelaTemp[$4.label].tipo == "string")
+				if(tabelaTemp[contexto][$4.label].tipo == "string")
 				{
-					adicional = "\tchar "  + $$.label + "[" + tabelaTemp[$4.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $4.label + ");\n";						
-					tabelaTemp[$2.label].tamanho = tabelaTemp[$4.label].tamanho;
-					tabelaVariaveis[$2.label].tamanho = tabelaTemp[$4.label].tamanho;
-					tabelaTemp[$$.label].tamanho = tabelaTemp[$4.label].tamanho;
-					tabelaVariaveis[$$.label].tamanho = tabelaTemp[$4.label].tamanho;
+					adicional = "\tchar "  + $$.label + "[" + tabelaTemp[contexto][$4.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $4.label + ");\n";						
+					tabelaTemp[contexto][$2.label].tamanho = tabelaTemp[contexto][$4.label].tamanho;
+					tabelaTemp[contexto][$$.label].tamanho = tabelaTemp[contexto][$4.label].tamanho;
 
 				}
 				else
@@ -156,7 +157,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if( $1.label == tabelaTemp[$4.label].tipo )
+				if( $1.label == tabelaTemp[contexto][$4.label].tipo )
 					adicional = "\tint " + $$.label + " = " + $4.label + ";\n";
 				else
 					yyerror("\nTIPOS INCOMPATIVEIS");
@@ -167,12 +168,12 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 
-				if(procuraTabelaVariaveis($1.label)){
-					if((tabelaVariaveis[$1.label].tipo != "bool" && tabelaTemp[$3.label].tipo == "bool") || (tabelaVariaveis[$1.label].tipo == "bool" && tabelaTemp[$3.label].tipo != "bool")){
+				if(procuraTabelaTemp($1.label)){
+					if((tabelaTemp[contexto][$1.label].tipo != "bool" && tabelaTemp[contexto][$3.label].tipo == "bool") || (tabelaTemp[contexto][$1.label].tipo == "bool" && tabelaTemp[contexto][$3.label].tipo != "bool")){
 						yyerror("\nTIPOS INCOMPATIVEIS");						
 					}
 					
-					adicional = "\t" + tabelaVariaveis[$1.label].label + " = " + verificaCastAtribuicao(tabelaVariaveis[$1.label].tipo, tabelaTemp[$3.label].tipo) + $3.label + ";\n";			
+					adicional = "\t" + tabelaTemp[contexto][$1.label].label + " = " + verificaCastAtribuicao(tabelaTemp[contexto][$1.label].tipo, tabelaTemp[contexto][$3.label].tipo) + $3.label + ";\n";			
 				}
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
@@ -183,16 +184,16 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 
-				if(tabelaTemp[$1.label].tipo == "string" && tabelaTemp[$3.label].tipo == "string")
+				if(tabelaTemp[contexto][$1.label].tipo == "string" && tabelaTemp[contexto][$3.label].tipo == "string")
 				{
 					$$.label = criaAtributo("string", "");
-					int tamanho = atoi(tabelaTemp[$1.label].tamanho.c_str()) + atoi(tabelaTemp[$3.label].tamanho.c_str());
+					int tamanho = atoi(tabelaTemp[contexto][$1.label].tamanho.c_str()) + atoi(tabelaTemp[contexto][$3.label].tamanho.c_str());
 
 					stringstream aux;   
 				    aux << tamanho;
 				    string tamanhoNovaString;
 				    tamanhoNovaString = aux.str();
-					tabelaTemp[$$.label].tamanho = tamanhoNovaString;
+					tabelaTemp[contexto][$$.label].tamanho = tamanhoNovaString;
 
 					string aux0 = "\tchar " + $$.label + "[" + tamanhoNovaString + "] = \"\";\n";
 					string aux1 = "\tstrcat(" + $$.label + "," + $1.label + ");\n";
@@ -208,7 +209,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E '+' E {		
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("+",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("+",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -224,7 +225,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E '-' E {		
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("+",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("+",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -240,7 +241,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E '*' E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("*",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("*",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -255,7 +256,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E '/' E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("/",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("/",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -270,7 +271,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E TK_MENOR E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS", tabelaTemp[$1.label].tipo, tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS", tabelaTemp[contexto][$1.label].tipo, tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -285,7 +286,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E TK_MAIOR E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -300,7 +301,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E TK_MAIORIGUAL E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -315,7 +316,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E TK_MENORIGUAL E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -330,7 +331,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E TK_IGUAL E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("IGUAL_DIFERENTE",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("IGUAL_DIFERENTE",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -345,7 +346,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| E TK_DIFERENTE E {
 
 				string adicional;		
-				string resultado = verificaCompatibilidadeVariaveis("IGUAL_DIFERENTE",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("IGUAL_DIFERENTE",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
@@ -359,7 +360,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			}
 			| E TK_AND E {
 
-				if(verificaCompatibilidadeVariaveis("AND_OR",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo)=="certo") {
+				if(verificaCompatibilidadeVariaveis("AND_OR",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo)=="certo") {
 					
 					$$.label = criaAtributo("bool", "");
 					string adicional = "\tint " + $$.label + " = " + $1.label + " && " + $3.label + ";\n";
@@ -370,7 +371,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			}
 			| E TK_OR E {
 
-				if(verificaCompatibilidadeVariaveis("AND_OR",tabelaTemp[$1.label].tipo,tabelaTemp[$3.label].tipo)=="certo") {
+				if(verificaCompatibilidadeVariaveis("AND_OR",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo)=="certo") {
 					
 					$$.label = criaAtributo("bool", "");
 					string adicional = "\tint " + $$.label + " = " + $1.label + " || " + $3.label + ";\n";
@@ -381,7 +382,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			}
 			| TK_NEGADO E {
 
-				if(verificaCompatibilidadeVariaveis("!",tabelaTemp[$2.label].tipo,"")=="certo") {
+				if(verificaCompatibilidadeVariaveis("!",tabelaTemp[contexto][$2.label].tipo,"")=="certo") {
 
 					$$.label = criaAtributo("bool", "");
 					string adicional = "\tint " + $$.label + " = !" + $2.label + ";\n";
@@ -410,7 +411,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				if($1.label.length() == 3) {
 
 					$$.label = criaAtributo("char", $1.label);				
-					$$.traducao = "\tchar " + $$.label + " = " + $1.label + ";\n";
+					$$.traducao = "\tchar " + $$.label + ";\n\t" + $$.label + " = " + $1.label + ";\n";
 				}
 				else
 					yyerror("\nSEGMENTATION FAULT\n");
@@ -419,13 +420,13 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_STRING {
 
 				$$.label = criaAtributo("string", $1.label);				
-				$$.traducao = "\tchar " + $$.label + "[" + tabelaTemp[$$.label].tamanho + "] = " + $1.label + ";\n";
+				$$.traducao = "\tchar " + $$.label + "[" + tabelaTemp[contexto][$$.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $1.label + ");\n";
 
 			}
 			| TK_ID {
 
-				if(procuraTabelaVariaveis($1.label)) 
-					$$.label = tabelaVariaveis[$1.label].label;					
+				if(procuraTabelaTemp($1.label)) 
+					$$.label = tabelaTemp[contexto][$1.label].label;					
 				
 				else 
 					yyerror("\nVARIAVEL NAO DECLARADA");
@@ -442,8 +443,9 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.traducao = "\tint " + $$.label + " = " + "0" + ";\n";
 			}
 			| TK_PRINT E ';' {
-				if(procuraTabelaVariaveis(tabelaTemp[$2.label].traducao)){
-					$$.label = tabelaTemp[$2.label].label;
+				if(procuraTabelaTemp(tabelaTemp[contexto][$2.label].traducao)){
+					int i = retornaContextoVariavel(tabelaTemp[contexto][$2.label].traducao);
+					$$.label = tabelaTemp[i][$2.label].label;
 					$$.traducao = $2.traducao + "\tcout << " + $$.label + " << endl" + ";\n";
 				}
 				else
@@ -451,8 +453,9 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			}
 			| TK_READ TK_ID ';' {
 
-				if(procuraTabelaVariaveis($2.label)){
-					$$.label = tabelaVariaveis[$2.label].label;
+				if(procuraTabelaTemp($2.label)){
+					int i = retornaContextoVariavel(tabelaTemp[contexto][$2.label].traducao);
+					$$.label = tabelaTemp[i][$2.label].label;
 					$$.traducao = "\tcin >> " + $$.label + ";\n";
 				}
 				else
@@ -460,11 +463,11 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			}
 			| TK_IF '(' E ')' BLOCO
 			{
-				if (tabelaTemp[$3.label].tipo == "bool")
+				int i = retornaContextoVariavel(tabelaTemp[contexto][$2.label].traducao);
+				if (tabelaTemp[i][$3.label].tipo == "bool")
 				{
-					string adicional = "\tif(!" + tabelaTemp[$3.label].label + ") goto FIM;\n";					
+					string adicional = "\tif(!" + tabelaTemp[i][$3.label].label + ") goto FIM;\n";					
 					$$.traducao = $3.traducao +adicional+ $5.traducao+"FIM:\n";
-					//cout << $$.traducao << endl;
 				}
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
@@ -482,13 +485,13 @@ string formaExpressao(string resultado, string operando, string label, string la
 	if(operando == " < " || operando == " > " || operando == " <= " || operando == " >= " || operando == " == " || operando == " != ")
 		tipo = "int";
 
-	if(tabelaTemp[label1].tipo != resultado)
+	if(tabelaTemp[contexto][label1].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label1 + ";\n";
 		adicional = aux2 + "\t" + tipo + " " + label + " = " + aux + operando + label2 + ";\n";
 	}
-	else if(tabelaTemp[label2].tipo != resultado)
+	else if(tabelaTemp[contexto][label2].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label2 + ";\n";
@@ -525,12 +528,20 @@ string criaLabel()
     return temp;
 }
 
-bool procuraTabelaVariaveis(string variavel)
+int retornaContextoVariavel(string variavel){
+
+	for(int i = 0; i <= contexto; i++)
+	    if(tabelaTemp[i].find(variavel) != tabelaTemp[i].end())
+	        return i;
+}
+
+bool procuraTabelaTemp(string variavel)
 {
-    if(tabelaVariaveis.find(variavel) == tabelaVariaveis.end())
-        return false;
-    else
-        return true;
+	for(int i = 0; i <= contexto; i++)
+	    if(tabelaTemp[i].find(variavel) != tabelaTemp[i].end())
+	        return true;
+    
+    return false;
 }
 
 string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB)
@@ -563,8 +574,8 @@ string criaAtributo(string tipo, string traducao)
 		atributo.tamanho = tamanho;
 	}
 
-	tabelaTemp[atributo.label] = atributo;
-	tabelaVariaveis[traducao] = atributo;
+	tabelaTemp[contexto][atributo.label] = atributo;
+	tabelaTemp[contexto][traducao] = atributo;
 
 	return atributo.label;
 }

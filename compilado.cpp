@@ -6,24 +6,23 @@ using namespace std;
 
 int main(void)
 {
-	char temp0[6] = "teste";
-	char temp1[6];
-	strcpy(temp1,temp0);
-	char temp2[2] = "1";
-	char temp3[2];
-	strcpy(temp3,temp2);
-	char temp4[8] = "";
-	strcat(temp4,temp1);
-	strcat(temp4,temp3);
-	cout << temp4 << endl;
-	int temp5 = 1;
-	if(!temp5) goto FIM;
-	float temp6;
-	temp6 = 1.2;
-	float temp7;
-	temp7 = temp6;
+	int temp0;
+	temp0 = 2;
+	int temp1;
+	temp1 = temp0;
+	int temp2;
+	temp2 = temp1;
+	int temp3 = temp1 + temp2;
+	cout << temp3 << endl;
+	int temp4 = temp1 < temp2;
+	if(!temp4) goto FIM;
+	int temp5;
+	temp5 = 1;
+	int temp6;
+	temp6 = temp5;
+	cout << temp1 << endl;
 FIM:
-	cout << temp7 << endl;
+	cout << temp4 << endl;
 	return 0;
 }
 
