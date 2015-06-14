@@ -1,12 +1,8 @@
 int main()
 {	
-	int a = 2;
-	int b;
-	b = a;
-	print a + b;
-	if( a < b ){
-		int c = 1;
+	int a = 1;
+	while(a > 0){
 		print a;
+		a = a - 1;
 	}
-	print c;
 }
