@@ -3,7 +3,6 @@
 #include <string>
 #include <sstream>
 #include <map>
-#include <vector>
 #include "tabelaDeCompatibilidade.hpp"
 
 #define YYSTYPE atributos
@@ -18,28 +17,27 @@ typedef struct atributos
 	string tamanho;
 } Atributos;
 
-vector<map <string, Atributos> > pilha;
-
-int contexto = -1;
+map <string, Atributos> tabelaTemp[10];
+int contexto = 0;
+//map <string, Atributos> tabelaVariaveis;
 
 int yylex(void);
 void yyerror(string);
-string criaVariavel();
+string criaLabel();
+bool procuraTabelaTemp(string variavel);
 string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB);
 string criaAtributo(string tipo, string traducao);
 string verificaCastAtribuicao(string tipo1, string tipo2);
 string formaExpressao(string operando, string resultado, string label, string label1, string label2);
-int procuraVariavel(string variavel);
-string criaLabel();
+int retornaContextoVariavel(string variavel);
 
 %}
 
 %token TK_NUM_INT TK_NUM_FLOAT TK_TRUE TK_FALSE TK_CHAR TK_STRING
 %token TK_MAIN TK_ID TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_BOOL TK_TIPO_CHAR TK_TIPO_STRING 
-%token TK_FIM TK_ERROR TK_PRINT TK_READ TK_IF TK_ELSE TK_WHILE TK_DO
-%token TK_ARITMETICOS TK_RELACIONAIS TK_ANDOR TK_INDECREMENTO
+%token TK_FIM TK_ERROR TK_PRINT TK_READ TK_IF
 %token TK_MAIOR TK_MENOR TK_MAIORIGUAL TK_MENORIGUAL TK_IGUAL TK_DIFERENTE
-%token TK_AND TK_OR TK_NEGADO 
+%token TK_AND TK_OR TK_NEGADO
 
 %left TK_AND TK_OR
 %left TK_MENOR TK_MAIOR TK_MAIORIGUAL TK_MENORIGUAL TK_IGUAL TK_DIFERENTE
@@ -61,16 +59,10 @@ S 			: TK_TIPO_INT TK_MAIN '(' ')' BLOCO {
 				cout << $5.traducao << "\treturn 0;\n}\n" << endl; 
 			} ;
 
-BLOCO		: {	contexto++;
-				map<string, Atributos> tabela;
-				pilha.push_back(tabela);
-			}
-			'{' COMANDOS '}' {
+BLOCO		: '{' COMANDOS '}' {
+				contexto++;
+				$$.traducao = $2.traducao;
 
-				$$.traducao = $3.traducao;
-			
-				contexto--;
-				pilha.pop_back();
 			};
 
 COMANDOS	: E  COMANDOS {
@@ -79,7 +71,6 @@ COMANDOS	: E  COMANDOS {
 				
 			}
 			| E {
-
 				$$.traducao = $1.traducao;
 			}
 			;			
@@ -113,10 +104,10 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if(pilha[contexto][$4.label].tipo == "bool")
+				if(tabelaTemp[contexto][$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[contexto][$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[contexto][$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $2.traducao + $4.traducao + adicional;
 			}
@@ -125,10 +116,10 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if(pilha[contexto][$4.label].tipo == "bool")
+				if(tabelaTemp[contexto][$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tfloat " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[contexto][$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tfloat " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[contexto][$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $2.traducao + $4.traducao + adicional;
 			}
@@ -137,10 +128,10 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if(pilha[contexto][$4.label].tipo == "bool")
+				if(tabelaTemp[contexto][$4.label].tipo == "bool")
 					yyerror("\nTIPOS INCOMPATIVEIS");
 				else
-					adicional = "\tchar " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[contexto][$4.label].tipo) + $4.label + ";\n";
+					adicional = "\tchar " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, tabelaTemp[contexto][$4.label].tipo) + $4.label + ";\n";
 					
 				$$.traducao = $1.traducao + $4.traducao + adicional;
 			}
@@ -149,11 +140,11 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 					
-				if(pilha[contexto][$4.label].tipo == "string")
+				if(tabelaTemp[contexto][$4.label].tipo == "string")
 				{
-					adicional = "\tchar "  + $$.label + "[" + pilha[contexto][$4.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $4.label + ");\n";						
-					pilha[contexto][$2.label].tamanho = pilha[contexto][$4.label].tamanho;
-					pilha[contexto][$$.label].tamanho = pilha[contexto][$4.label].tamanho;
+					adicional = "\tchar "  + $$.label + "[" + tabelaTemp[contexto][$4.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $4.label + ");\n";						
+					tabelaTemp[contexto][$2.label].tamanho = tabelaTemp[contexto][$4.label].tamanho;
+					tabelaTemp[contexto][$$.label].tamanho = tabelaTemp[contexto][$4.label].tamanho;
 
 				}
 				else
@@ -166,7 +157,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.label = criaAtributo($1.label, $2.label);
 				string adicional;
 
-				if( $1.label == pilha[contexto][$4.label].tipo )
+				if( $1.label == tabelaTemp[contexto][$4.label].tipo )
 					adicional = "\tint " + $$.label + " = " + $4.label + ";\n";
 				else
 					yyerror("\nTIPOS INCOMPATIVEIS");
@@ -176,13 +167,13 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_ID '=' E ';' {
 
 				string adicional;
-				int i;
-				if(i = procuraVariavel($1.label), i != -1){
-					if((pilha[i][$1.label].tipo != "bool" && pilha[i][$3.label].tipo == "bool") || (pilha[i][$1.label].tipo == "bool" && pilha[i][$3.label].tipo != "bool")){
+
+				if(procuraTabelaTemp($1.label)){
+					if((tabelaTemp[contexto][$1.label].tipo != "bool" && tabelaTemp[contexto][$3.label].tipo == "bool") || (tabelaTemp[contexto][$1.label].tipo == "bool" && tabelaTemp[contexto][$3.label].tipo != "bool")){
 						yyerror("\nTIPOS INCOMPATIVEIS");						
 					}
 					
-					adicional = "\t" + pilha[i][$1.label].label + " = " + verificaCastAtribuicao(pilha[i][$1.label].tipo, pilha[i][$3.label].tipo) + $3.label + ";\n";			
+					adicional = "\t" + tabelaTemp[contexto][$1.label].label + " = " + verificaCastAtribuicao(tabelaTemp[contexto][$1.label].tipo, tabelaTemp[contexto][$3.label].tipo) + $3.label + ";\n";			
 				}
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
@@ -193,16 +184,16 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 
-				if(pilha[contexto][$1.label].tipo == "string" && pilha[contexto][$3.label].tipo == "string")
+				if(tabelaTemp[contexto][$1.label].tipo == "string" && tabelaTemp[contexto][$3.label].tipo == "string")
 				{
 					$$.label = criaAtributo("string", "");
-					int tamanho = atoi(pilha[contexto][$1.label].tamanho.c_str()) + atoi(pilha[contexto][$3.label].tamanho.c_str());
+					int tamanho = atoi(tabelaTemp[contexto][$1.label].tamanho.c_str()) + atoi(tabelaTemp[contexto][$3.label].tamanho.c_str());
 
 					stringstream aux;   
 				    aux << tamanho;
 				    string tamanhoNovaString;
 				    tamanhoNovaString = aux.str();
-					pilha[contexto][$$.label].tamanho = tamanhoNovaString;
+					tabelaTemp[contexto][$$.label].tamanho = tamanhoNovaString;
 
 					string aux0 = "\tchar " + $$.label + "[" + tamanhoNovaString + "] = \"\";\n";
 					string aux1 = "\tstrcat(" + $$.label + "," + $1.label + ");\n";
@@ -215,72 +206,190 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.traducao = $1.traducao + $3.traducao + adicional;
 			
 			}
-			| E TK_ARITMETICOS E {
+			| E '+' E {		
 
 				string adicional;		
-				int i = procuraVariavel($1.label);
-				int j = procuraVariavel($3.label);
-				string resultado = verificaCompatibilidadeVariaveis("aritmeticos",pilha[i][$1.label].tipo,pilha[j][$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("+",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
 				}
 				else{
 					$$.label = criaAtributo(resultado, "");
-					adicional = formaExpressao(resultado, " "+$2.label+" ", $$.label, $1.label, $3.label);
+					adicional = formaExpressao(resultado, " + ", $$.label, $1.label, $3.label);
 				}
 
 				$$.traducao = $1.traducao + $3.traducao + adicional;
-
+			
 			}
-			| E TK_RELACIONAIS E{
+			| E '-' E {		
 
 				string adicional;		
-				int i = procuraVariavel($1.label);
-				int j = procuraVariavel($3.label);
-				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",pilha[i][$1.label].tipo,pilha[j][$3.label].tipo);
+				string resultado = verificaCompatibilidadeVariaveis("+",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
 
 				if(resultado == "erro") {
 					yyerror("\nOPERACAO INVALIDA");
 				}
 				else{
-					$$.label = criaAtributo("bool", "");
-					adicional = formaExpressao(resultado, " "+$2.label+" ", $$.label, $1.label, $3.label);
-				}
-
-				$$.traducao = $1.traducao + $3.traducao + adicional;				
-			}
-			| E TK_ANDOR E {
-
-				string adicional;
-				int i = procuraVariavel($1.label);
-				int j = procuraVariavel($3.label);
-				string resultado = verificaCompatibilidadeVariaveis("AND_OR",pilha[i][$1.label].tipo,pilha[j][$3.label].tipo);
-				
-				if(resultado == "erro") {
-					yyerror("\nOPERACAO INVALIDA");
-				}
-				else{
-					$$.label = criaAtributo("bool", "");
-					adicional = "\tint " + $$.label + " = " + $1.label + " && " + $3.label + ";\n";
+					$$.label = criaAtributo(resultado, "");
+					adicional = formaExpressao(resultado, " - ", $$.label, $1.label, $3.label);
 				}
 
 				$$.traducao = $1.traducao + $3.traducao + adicional;
+			
+			}
+			| E '*' E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("*",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo(resultado, "");
+					adicional = formaExpressao(resultado, " * ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			}
+			| E '/' E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("/",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo(resultado, "");
+					adicional = formaExpressao(resultado, " / ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			} 
+			| E TK_MENOR E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS", tabelaTemp[contexto][$1.label].tipo, tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo("bool", "");
+					adicional = formaExpressao(resultado, " < ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			}
+			| E TK_MAIOR E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo("bool", "");
+					adicional = formaExpressao(resultado, " > ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			}
+			| E TK_MAIORIGUAL E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo("bool", "");
+					adicional = formaExpressao(resultado, " >= ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			}
+			| E TK_MENORIGUAL E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("RELACIONAIS",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo("bool", "");
+					adicional = formaExpressao(resultado, " <= ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			}
+			| E TK_IGUAL E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("IGUAL_DIFERENTE",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo("bool", "");
+					adicional = formaExpressao(resultado, " == ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			}
+			| E TK_DIFERENTE E {
+
+				string adicional;		
+				string resultado = verificaCompatibilidadeVariaveis("IGUAL_DIFERENTE",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo);
+
+				if(resultado == "erro") {
+					yyerror("\nOPERACAO INVALIDA");
+				}
+				else{
+					$$.label = criaAtributo("bool", "");
+					adicional = formaExpressao(resultado, " != ", $$.label, $1.label, $3.label);
+				}
+
+				$$.traducao = $1.traducao + $3.traducao + adicional;
+			}
+			| E TK_AND E {
+
+				if(verificaCompatibilidadeVariaveis("AND_OR",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo)=="certo") {
+					
+					$$.label = criaAtributo("bool", "");
+					string adicional = "\tint " + $$.label + " = " + $1.label + " && " + $3.label + ";\n";
+					$$.traducao = $1.traducao + $3.traducao + adicional;
+				}
+				else
+					yyerror("\nOPERACAO INVALIDA");
+			}
+			| E TK_OR E {
+
+				if(verificaCompatibilidadeVariaveis("AND_OR",tabelaTemp[contexto][$1.label].tipo,tabelaTemp[contexto][$3.label].tipo)=="certo") {
+					
+					$$.label = criaAtributo("bool", "");
+					string adicional = "\tint " + $$.label + " = " + $1.label + " || " + $3.label + ";\n";
+					$$.traducao = $1.traducao + $3.traducao + adicional;
+				}
+				else
+					yyerror("\nOPERACAO INVALIDA");
 			}
 			| TK_NEGADO E {
 
-				string adicional;
-				int i = procuraVariavel($2.label);
-				string resultado = verificaCompatibilidadeVariaveis("!",pilha[contexto][$2.label].tipo,"");
-				if(resultado == "erro") {
-					yyerror("\nOPERACAO INVALIDA");
-				}
-				else{
+				if(verificaCompatibilidadeVariaveis("!",tabelaTemp[contexto][$2.label].tipo,"")=="certo") {
+
 					$$.label = criaAtributo("bool", "");
 					string adicional = "\tint " + $$.label + " = !" + $2.label + ";\n";
 					$$.traducao = $2.traducao + adicional;
 				}
-					
+				else
+					yyerror("\nOPERACAO INVALIDA");
 			}
 			|  '(' E ')' {
 
@@ -311,13 +420,13 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_STRING {
 
 				$$.label = criaAtributo("string", $1.label);				
-				$$.traducao = "\tchar " + $$.label + "[" + pilha[contexto][$$.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $1.label + ");\n";
+				$$.traducao = "\tchar " + $$.label + "[" + tabelaTemp[contexto][$$.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $1.label + ");\n";
 
 			}
 			| TK_ID {
-				int i;
-				if(i = procuraVariavel($1.label), i != -1)
-					$$.label = pilha[i][$1.label].label;					
+
+				if(procuraTabelaTemp($1.label)) 
+					$$.label = tabelaTemp[contexto][$1.label].label;					
 				
 				else 
 					yyerror("\nVARIAVEL NAO DECLARADA");
@@ -334,74 +443,31 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				$$.traducao = "\tint " + $$.label + " = " + "0" + ";\n";
 			}
 			| TK_PRINT E ';' {
-				int i;
-				if(i = procuraVariavel($2.label), i != -1){
-					
-					$$.label = pilha[i][$2.label].label;
+				if(procuraTabelaTemp(tabelaTemp[contexto][$2.label].traducao)){
+					int i = retornaContextoVariavel(tabelaTemp[contexto][$2.label].traducao);
+					$$.label = tabelaTemp[i][$2.label].label;
 					$$.traducao = $2.traducao + "\tcout << " + $$.label + " << endl" + ";\n";
 				}
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
 			| TK_READ TK_ID ';' {
-				int i;
-				if(i = procuraVariavel($2.label), i != -1){
-			
-					$$.label = pilha[i][$2.label].label;
+
+				if(procuraTabelaTemp($2.label)){
+					int i = retornaContextoVariavel(tabelaTemp[contexto][$2.label].traducao);
+					$$.label = tabelaTemp[i][$2.label].label;
 					$$.traducao = "\tcin >> " + $$.label + ";\n";
 				}
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-			| TK_IF '(' E ')' BLOCO {
-
-				int i = procuraVariavel($3.label);
-				string label = criaLabel();
-
-				if (pilha[i][$3.label].tipo == "bool")
+			| TK_IF '(' E ')' BLOCO
+			{
+				int i = retornaContextoVariavel(tabelaTemp[contexto][$2.label].traducao);
+				if (tabelaTemp[i][$3.label].tipo == "bool")
 				{
-					string adicional = "\tif(!" + pilha[i][$3.label].label + ") goto " + label + ";\n";					
-					$$.traducao = $3.traducao + adicional + $5.traducao + label +":\n";
-				}
-				else
-					yyerror("ERRO: OPERACAO INVALIDA");
-			}
-			| TK_IF '(' E ')' BLOCO TK_ELSE BLOCO {
-
-				int i = procuraVariavel($3.label);
-				string labelIf = criaLabel();
-				string labelElse = criaLabel();
-				if (pilha[i][$3.label].tipo == "bool")
-				{
-					string adicional = "\tif(!" + pilha[i][$3.label].label + ") goto " + labelIf + ";\n";					
-					$$.traducao = $3.traducao + adicional + $5.traducao + "\tgoto " + labelElse + ";\n" + labelIf + ":\n" + $7.traducao + labelElse + ":\n";
-				}
-				else
-					yyerror("ERRO: OPERACAO INVALIDA");
-			}
-			| TK_WHILE '(' E ')' BLOCO {
-				
-				int i = procuraVariavel($3.label);			
-				string inicioWhile = criaLabel();
-				string fimWhile = criaLabel();	
-				if (pilha[i][$3.label].tipo == "bool")
-				{
-					string adicional = "\tif(!" + pilha[i][$3.label].label + ") goto " + fimWhile + ";\n";
-					string adicional2 = "\tif(" + pilha[i][$3.label].label + ") goto " + inicioWhile + ";\n";					
-					
-					$$.traducao = inicioWhile + ":\n" + $3.traducao + adicional + $5.traducao + adicional2 + fimWhile + ":\n";
-				}
-				else
-					yyerror("ERRO: OPERACAO INVALIDA");
-			}
-			| TK_DO BLOCO TK_WHILE '(' E ')' {
-
-				int i = procuraVariavel($5.label);	
-				string inicioWhile = criaLabel();
-				if (pilha[i][$5.label].tipo == "bool")
-				{
-					string adicional = "\tif(" + pilha[i][$5.label].label + ") goto " + inicioWhile + ";\n";
-					$$.traducao = inicioWhile + ":\n" + $2.traducao + $5.traducao + adicional;
+					string adicional = "\tif(!" + tabelaTemp[i][$3.label].label + ") goto FIM;\n";					
+					$$.traducao = $3.traducao +adicional+ $5.traducao+"FIM:\n";
 				}
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
@@ -419,34 +485,22 @@ string formaExpressao(string resultado, string operando, string label, string la
 	if(operando == " < " || operando == " > " || operando == " <= " || operando == " >= " || operando == " == " || operando == " != ")
 		tipo = "int";
 
-	if(pilha[contexto][label1].tipo != resultado)
+	if(tabelaTemp[contexto][label1].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label1 + ";\n";
-		adicional = aux2 + "\t" + tipo + " " + label + ";\n\t" + label + " = " + aux + operando + label2 + ";\n";
+		adicional = aux2 + "\t" + tipo + " " + label + " = " + aux + operando + label2 + ";\n";
 	}
-	else if(pilha[contexto][label2].tipo != resultado)
+	else if(tabelaTemp[contexto][label2].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label2 + ";\n";
-		adicional = aux2+"\t" + tipo + " " + label + ";\n\t" + label + " = " + label1 + operando + aux + ";\n";
+		adicional = aux2+"\t" + tipo + " " + label + " = " + label1 + operando + aux + ";\n";
 	}
 	else
-		adicional = "\t" + tipo + " " + label + ";\n\t" + label + " = " + label1 + operando + label2 + ";\n";
+		adicional = "\t" + tipo + " " + label + " = " + label1 + operando + label2 + ";\n";
 
 	return adicional;
-}
-
-string criaLabel(){
-    stringstream aux;
-    static int i = 0;
-    aux << i;
-
-    string temp ("LABEL_");
-    temp = temp + aux.str();
-    i++;
-
-    return temp;
 }
 
 string verificaCastAtribuicao(string tipo1, string tipo2) {
@@ -460,17 +514,38 @@ string verificaCastAtribuicao(string tipo1, string tipo2) {
 		return "(char)";
 }
 
-int procuraVariavel(string variavel){
+string criaLabel()
+{
+    stringstream aux;
+    static int i = 0;
+    aux << i;
 
-	for(int i = 0; i <= contexto; i++){
-	    if(pilha[i].find(variavel) != pilha[i].end()){
-	        return i;
-	    }
-	}
-	return -1;
+    string temp ("temp");
+    temp = temp + aux.str();
+
+    i++;
+
+    return temp;
 }
 
-string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB){
+int retornaContextoVariavel(string variavel){
+
+	for(int i = 0; i <= contexto; i++)
+	    if(tabelaTemp[i].find(variavel) != tabelaTemp[i].end())
+	        return i;
+}
+
+bool procuraTabelaTemp(string variavel)
+{
+	for(int i = 0; i <= contexto; i++)
+	    if(tabelaTemp[i].find(variavel) != tabelaTemp[i].end())
+	        return true;
+    
+    return false;
+}
+
+string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB)
+{
 	int quant = (sizeof(tabelaCompatibilidade)/4);
 	
 	for (int i = 0; i < quant; i++)
@@ -482,22 +557,10 @@ string verificaCompatibilidadeVariaveis(string operador, string operandoA, strin
 	}
 }
 
-string criaVariavel(){
-    stringstream aux;
-    static int i = 0;
-    aux << i;
-
-    string temp ("t");
-    temp = temp + aux.str();
-
-    i++;
-
-    return temp;
-}
-
-string criaAtributo(string tipo, string traducao){
+string criaAtributo(string tipo, string traducao)
+{
 	Atributos atributo;
-	atributo.label = criaVariavel();
+	atributo.label = criaLabel();
 	atributo.traducao = traducao;
 	atributo.tipo = tipo;
 	atributo.tamanho = "NULL";
@@ -511,8 +574,8 @@ string criaAtributo(string tipo, string traducao){
 		atributo.tamanho = tamanho;
 	}
 
-	pilha[contexto][atributo.label] = atributo;
-	pilha[contexto][traducao] = atributo;
+	tabelaTemp[contexto][atributo.label] = atributo;
+	tabelaTemp[contexto][traducao] = atributo;
 
 	return atributo.label;
 }

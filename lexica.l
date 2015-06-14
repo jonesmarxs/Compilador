@@ -13,10 +13,6 @@ NUM {DIGITO}+
 REAL {NUM}+("."{NUM}+)?
 CHAR \'({LETRA}|{NUM})\'
 ID {LETRA}({LETRA}|{NUM})*
-RELACIONAIS (==|!=|>=|<=|<|>)
-ANDOR (&&|\|\|)
-ARITMETICOS [+\-*/]
-INDECREMENTO (\+\+|\-\-)
 
 %%
 
@@ -38,24 +34,25 @@ INDECREMENTO (\+\+|\-\-)
 "read"		{yylval.label = yytext; return TK_READ;}
 "print"		{yylval.label = yytext; return TK_PRINT;}
 "if"		{yylval.label = yytext; return TK_IF;}
-"else"		{yylval.label = yytext; return TK_ELSE;}
-"do"		{yylval.label = yytext; return TK_DO;}
-"while"		{yylval.label = yytext; return TK_WHILE;}
 
 [\'].*[\'] { yylval.label = yytext; return TK_CHAR; }
 [\"].*[\"] 		{ yylval.label = yytext; return TK_STRING; }
 
-"="				{ return *yytext; }
+">"			{yylval.label = yytext; return TK_MAIOR;}
+"<"			{yylval.label = yytext; return TK_MENOR;}
+">="		{yylval.label = yytext; return TK_MAIORIGUAL;}
+"<="		{yylval.label = yytext; return TK_MENORIGUAL;}
+"=="		{yylval.label = yytext; return TK_IGUAL;}
+"=!"		{yylval.label = yytext; return TK_DIFERENTE;}
 
-{ARITMETICOS}	{ yylval.label = yytext; return TK_ARITMETICOS; }
-{RELACIONAIS}	{ yylval.label = yytext; return TK_RELACIONAIS; }
-{ANDOR}			{ yylval.label = yytext; return TK_ANDOR; }
-"!"				{yylval.label = yytext; return TK_NEGADO;}
-{INDECREMENTO}	{yylval.label = yytext; return TK_INDECREMENTO;}
+"!"			{yylval.label = yytext; return TK_NEGADO;}
 
-[(){}[\];,]		{ return *yytext; }
+"&&"		{yylval.label = yytext; return TK_AND;}
+"||"		{yylval.label = yytext; return TK_OR;}
 
-"."				{ return *yytext; }
+[(){}[\];,]	{ return *yytext; }
+
+[+\-*/=\.]	{ return *yytext; }
 
 {NUM}		{ yylval.label = yytext; return TK_NUM_INT; }
 {REAL}		{ yylval.label = yytext; return TK_NUM_FLOAT; }
