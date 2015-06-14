@@ -63,15 +63,22 @@ extern int yydebug;
     TK_PRINT = 273,
     TK_READ = 274,
     TK_IF = 275,
-    TK_MAIOR = 276,
-    TK_MENOR = 277,
-    TK_MAIORIGUAL = 278,
-    TK_MENORIGUAL = 279,
-    TK_IGUAL = 280,
-    TK_DIFERENTE = 281,
-    TK_AND = 282,
-    TK_OR = 283,
-    TK_NEGADO = 284
+    TK_ELSE = 276,
+    TK_WHILE = 277,
+    TK_DO = 278,
+    TK_ARITMETICOS = 279,
+    TK_RELACIONAIS = 280,
+    TK_ANDOR = 281,
+    TK_INDECREMENTO = 282,
+    TK_MAIOR = 283,
+    TK_MENOR = 284,
+    TK_MAIORIGUAL = 285,
+    TK_MENORIGUAL = 286,
+    TK_IGUAL = 287,
+    TK_DIFERENTE = 288,
+    TK_AND = 289,
+    TK_OR = 290,
+    TK_NEGADO = 291
   };
 #endif
 /* Tokens.  */
@@ -93,15 +100,22 @@ extern int yydebug;
 #define TK_PRINT 273
 #define TK_READ 274
 #define TK_IF 275
-#define TK_MAIOR 276
-#define TK_MENOR 277
-#define TK_MAIORIGUAL 278
-#define TK_MENORIGUAL 279
-#define TK_IGUAL 280
-#define TK_DIFERENTE 281
-#define TK_AND 282
-#define TK_OR 283
-#define TK_NEGADO 284
+#define TK_ELSE 276
+#define TK_WHILE 277
+#define TK_DO 278
+#define TK_ARITMETICOS 279
+#define TK_RELACIONAIS 280
+#define TK_ANDOR 281
+#define TK_INDECREMENTO 282
+#define TK_MAIOR 283
+#define TK_MENOR 284
+#define TK_MAIORIGUAL 285
+#define TK_MENORIGUAL 286
+#define TK_IGUAL 287
+#define TK_DIFERENTE 288
+#define TK_AND 289
+#define TK_OR 290
+#define TK_NEGADO 291
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
