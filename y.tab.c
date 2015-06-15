@@ -522,10 +522,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    53,    53,    64,    64,    76,    81,    86,    91,    96,
-     101,   106,   111,   123,   135,   147,   164,   176,   192,   218,
-     236,   253,   270,   285,   290,   295,   300,   311,   317,   326,
-     331,   336,   346,   356,   369,   382,   397
+       0,    53,    53,    64,    64,    76,    81,    86,    97,   108,
+     119,   129,   139,   156,   173,   190,   211,   228,   244,   270,
+     288,   305,   322,   337,   342,   347,   352,   363,   369,   378,
+     383,   388,   398,   408,   421,   434,   449
 };
 #endif
 
@@ -1429,144 +1429,196 @@ yyreduce:
 #line 86 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo("int", (yyvsp[-1]).label);
-				(yyval).traducao = (yyvsp[-1]).traducao + "\tint " + (yyval).label + ";\n";
+				int i = procuraVariavel((yyvsp[-1]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo("int", (yyvsp[-1]).label);
+					(yyval).traducao = (yyvsp[-1]).traducao + "\tint " + (yyval).label + ";\n";
+				}
+				else
+					yyerror("\nVariavel \""+(yyvsp[-1]).label+"\" já foi declarada");
+
 			}
-#line 1436 "y.tab.c" /* yacc.c:1646  */
+#line 1442 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 91 "sintatica.y" /* yacc.c:1646  */
+#line 97 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo("float", (yyvsp[-1]).label);
-				(yyval).traducao = (yyvsp[-1]).traducao + "\tfloat " + (yyval).label + ";\n";
+				int i = procuraVariavel((yyvsp[-1]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo("float", (yyvsp[-1]).label);
+					(yyval).traducao = (yyvsp[-1]).traducao + "\tfloat " + (yyval).label + ";\n";
+				}
+				else
+					yyerror("\nVariavel \""+(yyvsp[-1]).label+"\" já foi declarada");
+
 			}
-#line 1446 "y.tab.c" /* yacc.c:1646  */
+#line 1458 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 96 "sintatica.y" /* yacc.c:1646  */
+#line 108 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo("char", (yyvsp[-1]).label);
-				(yyval).traducao = (yyvsp[-1]).traducao + "\tchar " + (yyval).label + ";\n";
+				int i = procuraVariavel((yyvsp[-1]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo("char", (yyvsp[-1]).label);
+					(yyval).traducao = (yyvsp[-1]).traducao + "\tchar " + (yyval).label + ";\n";
+				}
+				else
+					yyerror("\nVariavel \""+(yyvsp[-1]).label+"\" já foi declarada");
+
 			}
-#line 1456 "y.tab.c" /* yacc.c:1646  */
+#line 1474 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 101 "sintatica.y" /* yacc.c:1646  */
+#line 119 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo("string", (yyvsp[-1]).label);
-				(yyval).traducao = (yyvsp[-1]).traducao + "\tchar " + (yyval).label + "[0];\n";
+				int i = procuraVariavel((yyvsp[-1]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo("string", (yyvsp[-1]).label);
+					(yyval).traducao = (yyvsp[-1]).traducao + "\tchar " + (yyval).label + "[0];\n";
+				}
+				else
+					yyerror("\nVariavel \""+(yyvsp[-1]).label+"\" já foi declarada");
 			}
-#line 1466 "y.tab.c" /* yacc.c:1646  */
+#line 1489 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 106 "sintatica.y" /* yacc.c:1646  */
+#line 129 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo("bool", (yyvsp[-1]).label);
-				(yyval).traducao = (yyvsp[-1]).traducao + "\tint " + (yyval).label + ";\n";
+				int i = procuraVariavel((yyvsp[-1]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo("bool", (yyvsp[-1]).label);
+					(yyval).traducao = (yyvsp[-1]).traducao + "\tint " + (yyval).label + ";\n";
+				}
+				else
+					yyerror("\nVariavel \""+(yyvsp[-1]).label+"\" já foi declarada");
 			}
-#line 1476 "y.tab.c" /* yacc.c:1646  */
+#line 1504 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 111 "sintatica.y" /* yacc.c:1646  */
+#line 139 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 				string adicional;
+				int i = procuraVariavel((yyvsp[-3]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 
-				if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
-					yyerror("\nTIPOS INCOMPATIVEIS");
+					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+						yyerror("\nTIPOS INCOMPATIVEIS");
+					else
+						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+				}
 				else
-					adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
 					
 				(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + adicional;
 			}
-#line 1493 "y.tab.c" /* yacc.c:1646  */
+#line 1526 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 123 "sintatica.y" /* yacc.c:1646  */
+#line 156 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 				string adicional;
+				int i = procuraVariavel((yyvsp[-3]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 
-				if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
-					yyerror("\nTIPOS INCOMPATIVEIS");
+					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+						yyerror("\nTIPOS INCOMPATIVEIS");
+					else
+						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+				}
 				else
-					adicional = "\tfloat " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
 					
 				(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + adicional;
 			}
-#line 1510 "y.tab.c" /* yacc.c:1646  */
+#line 1548 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 135 "sintatica.y" /* yacc.c:1646  */
+#line 173 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 				string adicional;
+				int i = procuraVariavel((yyvsp[-3]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 
-				if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
-					yyerror("\nTIPOS INCOMPATIVEIS");
+					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+						yyerror("\nTIPOS INCOMPATIVEIS");
+					else
+						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+				}
 				else
-					adicional = "\tchar " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
 					
-				(yyval).traducao = (yyvsp[-4]).traducao + (yyvsp[-1]).traducao + adicional;
+				(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + adicional;
 			}
-#line 1527 "y.tab.c" /* yacc.c:1646  */
+#line 1570 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 147 "sintatica.y" /* yacc.c:1646  */
+#line 190 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 				string adicional;
-					
-				if(pilha[contexto][(yyvsp[-1]).label].tipo == "string")
-				{
-					adicional = "\tchar "  + (yyval).label + "[" + pilha[contexto][(yyvsp[-1]).label].tamanho + "]" + ";\n\tstrcpy(" + (yyval).label + "," + (yyvsp[-1]).label + ");\n";						
-					pilha[contexto][(yyvsp[-3]).label].tamanho = pilha[contexto][(yyvsp[-1]).label].tamanho;
-					pilha[contexto][(yyval).label].tamanho = pilha[contexto][(yyvsp[-1]).label].tamanho;
+				int i = procuraVariavel((yyvsp[-3]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 
+					if(pilha[contexto][(yyvsp[-1]).label].tipo != "string")
+						yyerror("\nTIPOS INCOMPATIVEIS");
+					
+					else{
+						adicional = "\tchar "  + (yyval).label + "[" + pilha[contexto][(yyvsp[-1]).label].tamanho + "]" + ";\n\tstrcpy(" + (yyval).label + "," + (yyvsp[-1]).label + ");\n";						
+						pilha[contexto][(yyvsp[-3]).label].tamanho = pilha[contexto][(yyvsp[-1]).label].tamanho;
+						pilha[contexto][(yyval).label].tamanho = pilha[contexto][(yyvsp[-1]).label].tamanho;
+					}
 				}
 				else
-					yyerror("\nTIPOS INCOMPATIVEIS");
+					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
 					
 				(yyval).traducao = (yyvsp[-4]).traducao + (yyvsp[-1]).traducao + adicional;
 			}
-#line 1549 "y.tab.c" /* yacc.c:1646  */
+#line 1596 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 164 "sintatica.y" /* yacc.c:1646  */
+#line 211 "sintatica.y" /* yacc.c:1646  */
     {
 
-				(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 				string adicional;
+				int i = procuraVariavel((yyvsp[-3]).label);
+				if(i == -1){
+					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
 
-				if( (yyvsp[-4]).label == pilha[contexto][(yyvsp[-1]).label].tipo )
-					adicional = "\tint " + (yyval).label + " = " + (yyvsp[-1]).label + ";\n";
+					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+						yyerror("\nTIPOS INCOMPATIVEIS");
+					else
+						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+				}
 				else
-					yyerror("\nTIPOS INCOMPATIVEIS");
-
-				(yyval).traducao = (yyvsp[-4]).traducao + (yyvsp[-1]).traducao + adicional;
+					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
+					
+				(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + adicional;
 			}
-#line 1566 "y.tab.c" /* yacc.c:1646  */
+#line 1618 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 176 "sintatica.y" /* yacc.c:1646  */
+#line 228 "sintatica.y" /* yacc.c:1646  */
     {
 
 				string adicional;
@@ -1583,11 +1635,11 @@ yyreduce:
 
 				(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + adicional;
 			}
-#line 1587 "y.tab.c" /* yacc.c:1646  */
+#line 1639 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 192 "sintatica.y" /* yacc.c:1646  */
+#line 244 "sintatica.y" /* yacc.c:1646  */
     {		
 
 				string adicional;
@@ -1614,11 +1666,11 @@ yyreduce:
 				(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + adicional;
 			
 			}
-#line 1618 "y.tab.c" /* yacc.c:1646  */
+#line 1670 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 218 "sintatica.y" /* yacc.c:1646  */
+#line 270 "sintatica.y" /* yacc.c:1646  */
     {
 
 				string adicional;		
@@ -1637,11 +1689,11 @@ yyreduce:
 				(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + adicional;
 
 			}
-#line 1641 "y.tab.c" /* yacc.c:1646  */
+#line 1693 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 236 "sintatica.y" /* yacc.c:1646  */
+#line 288 "sintatica.y" /* yacc.c:1646  */
     {
 
 				string adicional;		
@@ -1659,11 +1711,11 @@ yyreduce:
 
 				(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + adicional;				
 			}
-#line 1663 "y.tab.c" /* yacc.c:1646  */
+#line 1715 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 253 "sintatica.y" /* yacc.c:1646  */
+#line 305 "sintatica.y" /* yacc.c:1646  */
     {
 
 				string adicional;
@@ -1681,11 +1733,11 @@ yyreduce:
 
 				(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + adicional;
 			}
-#line 1685 "y.tab.c" /* yacc.c:1646  */
+#line 1737 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 270 "sintatica.y" /* yacc.c:1646  */
+#line 322 "sintatica.y" /* yacc.c:1646  */
     {
 
 				string adicional;
@@ -1701,41 +1753,41 @@ yyreduce:
 				}
 					
 			}
-#line 1705 "y.tab.c" /* yacc.c:1646  */
+#line 1757 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 285 "sintatica.y" /* yacc.c:1646  */
+#line 337 "sintatica.y" /* yacc.c:1646  */
     {
 
 				(yyval).label = (yyvsp[-1]).label;
 				(yyval).traducao = (yyvsp[-1]).traducao;
 			}
-#line 1715 "y.tab.c" /* yacc.c:1646  */
+#line 1767 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 290 "sintatica.y" /* yacc.c:1646  */
+#line 342 "sintatica.y" /* yacc.c:1646  */
     {
 
 				(yyval).label = criaAtributo("int", (yyvsp[0]).label);
 				(yyval).traducao = "\tint " + (yyval).label + ";\n\t" + (yyval).label + " = " + (yyvsp[0]).label + ";\n";
 			}
-#line 1725 "y.tab.c" /* yacc.c:1646  */
+#line 1777 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 295 "sintatica.y" /* yacc.c:1646  */
+#line 347 "sintatica.y" /* yacc.c:1646  */
     {
 
 				(yyval).label = criaAtributo("float", (yyvsp[0]).label);
 				(yyval).traducao = "\tfloat " + (yyval).label + ";\n\t" + (yyval).label + " = " + (yyvsp[0]).label + ";\n";
 			}
-#line 1735 "y.tab.c" /* yacc.c:1646  */
+#line 1787 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 300 "sintatica.y" /* yacc.c:1646  */
+#line 352 "sintatica.y" /* yacc.c:1646  */
     {
 
 				if((yyvsp[0]).label.length() == 3) {
@@ -1747,22 +1799,22 @@ yyreduce:
 					yyerror("\nSEGMENTATION FAULT\n");
 
 			}
-#line 1751 "y.tab.c" /* yacc.c:1646  */
+#line 1803 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 311 "sintatica.y" /* yacc.c:1646  */
+#line 363 "sintatica.y" /* yacc.c:1646  */
     {
 
 				(yyval).label = criaAtributo("string", (yyvsp[0]).label);				
 				(yyval).traducao = "\tchar " + (yyval).label + "[" + pilha[contexto][(yyval).label].tamanho + "]" + ";\n\tstrcpy(" + (yyval).label + "," + (yyvsp[0]).label + ");\n";
 
 			}
-#line 1762 "y.tab.c" /* yacc.c:1646  */
+#line 1814 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 317 "sintatica.y" /* yacc.c:1646  */
+#line 369 "sintatica.y" /* yacc.c:1646  */
     {
 				int i;
 				if(i = procuraVariavel((yyvsp[0]).label), i != -1)
@@ -1772,31 +1824,31 @@ yyreduce:
 					yyerror("\nVARIAVEL NAO DECLARADA");
 
 			}
-#line 1776 "y.tab.c" /* yacc.c:1646  */
+#line 1828 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 326 "sintatica.y" /* yacc.c:1646  */
+#line 378 "sintatica.y" /* yacc.c:1646  */
     {
 
 				(yyval).label = criaAtributo("bool", (yyvsp[0]).label);
 				(yyval).traducao = "\tint " + (yyval).label + " = " + "1" + ";\n";
 			}
-#line 1786 "y.tab.c" /* yacc.c:1646  */
+#line 1838 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 331 "sintatica.y" /* yacc.c:1646  */
+#line 383 "sintatica.y" /* yacc.c:1646  */
     {
 
 				(yyval).label = criaAtributo("bool", (yyvsp[0]).label);
 				(yyval).traducao = "\tint " + (yyval).label + " = " + "0" + ";\n";
 			}
-#line 1796 "y.tab.c" /* yacc.c:1646  */
+#line 1848 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 336 "sintatica.y" /* yacc.c:1646  */
+#line 388 "sintatica.y" /* yacc.c:1646  */
     {
 				int i;
 				if(i = procuraVariavel((yyvsp[-1]).label), i != -1){
@@ -1807,11 +1859,11 @@ yyreduce:
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-#line 1811 "y.tab.c" /* yacc.c:1646  */
+#line 1863 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 346 "sintatica.y" /* yacc.c:1646  */
+#line 398 "sintatica.y" /* yacc.c:1646  */
     {
 				int i;
 				if(i = procuraVariavel((yyvsp[-1]).label), i != -1){
@@ -1822,11 +1874,11 @@ yyreduce:
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-#line 1826 "y.tab.c" /* yacc.c:1646  */
+#line 1878 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 356 "sintatica.y" /* yacc.c:1646  */
+#line 408 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-2]).label);
@@ -1840,11 +1892,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1844 "y.tab.c" /* yacc.c:1646  */
+#line 1896 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 369 "sintatica.y" /* yacc.c:1646  */
+#line 421 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-4]).label);
@@ -1858,11 +1910,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1862 "y.tab.c" /* yacc.c:1646  */
+#line 1914 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 382 "sintatica.y" /* yacc.c:1646  */
+#line 434 "sintatica.y" /* yacc.c:1646  */
     {
 				
 				int i = procuraVariavel((yyvsp[-2]).label);			
@@ -1878,11 +1930,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1882 "y.tab.c" /* yacc.c:1646  */
+#line 1934 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 397 "sintatica.y" /* yacc.c:1646  */
+#line 449 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-1]).label);	
@@ -1895,11 +1947,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1899 "y.tab.c" /* yacc.c:1646  */
+#line 1951 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1903 "y.tab.c" /* yacc.c:1646  */
+#line 1955 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2127,7 +2179,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 409 "sintatica.y" /* yacc.c:1906  */
+#line 461 "sintatica.y" /* yacc.c:1906  */
 
 
 #include "lex.yy.c"

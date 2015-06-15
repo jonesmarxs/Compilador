@@ -1,8 +1,9 @@
 int main()
 {	
 	int a = 1;
-	while(a > 0){
+	if(a > 0){
+		int b;
 		print a;
-		a = a - 1;
 	}
+	print b;
 }
