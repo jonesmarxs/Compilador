@@ -86,7 +86,7 @@ COMANDOS	: E  COMANDOS {
 E 			: TK_TIPO_INT TK_ID ';' {
 
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo("int", $2.label);
 					$$.traducao = $2.traducao + "\tint " + $$.label + ";\n";
 				}
@@ -97,7 +97,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_TIPO_FLOAT TK_ID ';' {
 
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo("float", $2.label);
 					$$.traducao = $2.traducao + "\tfloat " + $$.label + ";\n";
 				}
@@ -108,7 +108,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_TIPO_CHAR TK_ID ';' {
 
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo("char", $2.label);
 					$$.traducao = $2.traducao + "\tchar " + $$.label + ";\n";
 				}
@@ -119,7 +119,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_TIPO_STRING TK_ID ';' {
 
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo("string", $2.label);
 					$$.traducao = $2.traducao + "\tchar " + $$.label + "[0];\n";
 				}
@@ -129,7 +129,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_TIPO_BOOL TK_ID ';' {
 
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo("bool", $2.label);
 					$$.traducao = $2.traducao + "\tint " + $$.label + ";\n";
 				}
@@ -140,13 +140,13 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo($1.label, $2.label);
-
-					if(pilha[contexto][$4.label].tipo == "bool")
+					int j = procuraVariavel($4.label);
+					if(pilha[j][$4.label].tipo == "bool" || pilha[j][$4.label].tipo == "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[contexto][$4.label].tipo) + $4.label + ";\n";
+						adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[j][$4.label].tipo) + $4.label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+$2.label+"\" já foi declarada");
@@ -157,13 +157,13 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo($1.label, $2.label);
-
-					if(pilha[contexto][$4.label].tipo == "bool")
+					int j = procuraVariavel($4.label);
+					if(pilha[j][$4.label].tipo == "bool" || pilha[j][$4.label].tipo == "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[contexto][$4.label].tipo) + $4.label + ";\n";
+						adicional = "\tfloat " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[j][$4.label].tipo) + $4.label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+$2.label+"\" já foi declarada");
@@ -174,13 +174,13 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo($1.label, $2.label);
-
-					if(pilha[contexto][$4.label].tipo == "bool")
+					int j = procuraVariavel($4.label);
+					if(pilha[j][$4.label].tipo == "bool" || pilha[j][$4.label].tipo == "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[contexto][$4.label].tipo) + $4.label + ";\n";
+						adicional = "\tchar " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[j][$4.label].tipo) + $4.label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+$2.label+"\" já foi declarada");
@@ -191,16 +191,16 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo($1.label, $2.label);
-
-					if(pilha[contexto][$4.label].tipo != "string")
+					int j = procuraVariavel($4.label);
+					if(pilha[j][$4.label].tipo != "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					
 					else{
-						adicional = "\tchar "  + $$.label + "[" + pilha[contexto][$4.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $4.label + ");\n";						
-						pilha[contexto][$2.label].tamanho = pilha[contexto][$4.label].tamanho;
-						pilha[contexto][$$.label].tamanho = pilha[contexto][$4.label].tamanho;
+						adicional = "\tchar "  + $$.label + "[" + pilha[j][$4.label].tamanho + "]" + ";\n\tstrcpy(" + $$.label + "," + $4.label + ");\n";						
+						pilha[i][$2.label].tamanho = pilha[j][$4.label].tamanho;
+						pilha[i][$$.label].tamanho = pilha[j][$4.label].tamanho;
 					}
 				}
 				else
@@ -212,13 +212,13 @@ E 			: TK_TIPO_INT TK_ID ';' {
 
 				string adicional;
 				int i = procuraVariavel($2.label);
-				if(i == -1){
+				if(i != contexto){
 					$$.label = criaAtributo($1.label, $2.label);
-
-					if(pilha[contexto][$4.label].tipo == "bool")
+					int j = procuraVariavel($4.label);
+					if(pilha[j][$4.label].tipo != "bool")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[contexto][$4.label].tipo) + $4.label + ";\n";
+						adicional = "\tint " + $$.label + ";\n\t" + $$.label +" = " + verificaCastAtribuicao($1.label, pilha[j][$4.label].tipo) + $4.label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+$2.label+"\" já foi declarada");
@@ -388,7 +388,6 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			| TK_PRINT E ';' {
 				int i;
 				if(i = procuraVariavel($2.label), i != -1){
-					
 					$$.label = pilha[i][$2.label].label;
 					$$.traducao = $2.traducao + "\tcout << " + $$.label + " << endl" + ";\n";
 				}
@@ -446,7 +445,7 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-			| TK_DO BLOCO TK_WHILE '(' E ')' {
+			| TK_DO BLOCO TK_WHILE '(' E ')' ';'{
 
 				int i = procuraVariavel($5.label);	
 				string inicioWhile = criaLabel();
@@ -467,17 +466,18 @@ int yyparse();
 string formaExpressao(string resultado, string operando, string label, string label1, string label2){
 
 	string adicional, tipo = resultado;
-
+	int i = procuraVariavel(label1);
+	int j = procuraVariavel(label2);
 	if(operando == " < " || operando == " > " || operando == " <= " || operando == " >= " || operando == " == " || operando == " != ")
 		tipo = "int";
 
-	if(pilha[contexto][label1].tipo != resultado)
+	if(pilha[i][label1].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label1 + ";\n";
 		adicional = aux2 + "\t" + tipo + " " + label + ";\n\t" + label + " = " + aux + operando + label2 + ";\n";
 	}
-	else if(pilha[contexto][label2].tipo != resultado)
+	else if(pilha[j][label2].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label2 + ";\n";
@@ -514,7 +514,7 @@ string verificaCastAtribuicao(string tipo1, string tipo2) {
 
 int procuraVariavel(string variavel){
 
-	for(int i = 0; i <= contexto; i++){
+	for(int i = contexto; i >= 0; i--){
 	    if(pilha[i].find(variavel) != pilha[i].end()){
 	        return i;
 	    }

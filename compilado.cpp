@@ -1,2 +1,0 @@
-
-VARIAVEL NAO DECLARADA - Linha: 8

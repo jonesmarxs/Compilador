@@ -472,7 +472,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  36
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  91
+#define YYNSTATES  92
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -525,7 +525,7 @@ static const yytype_uint16 yyrline[] =
        0,    53,    53,    64,    64,    76,    81,    86,    97,   108,
      119,   129,   139,   156,   173,   190,   211,   228,   244,   270,
      288,   305,   322,   337,   342,   347,   352,   363,   369,   378,
-     383,   388,   398,   408,   421,   434,   449
+     383,   388,   397,   407,   420,   433,   448
 };
 #endif
 
@@ -581,8 +581,8 @@ static const yytype_int16 yypact[] =
       30,   105,   -39,   105,   -39,   105,   -39,   105,   -39,   105,
      -39,   -39,   -39,    79,   106,    45,   -39,    22,    22,    22,
       22,   -39,   109,   112,   118,   126,   136,   -39,   -39,   105,
-     -39,   -39,   -39,   -39,   -39,    67,   -39,   142,   -39,   -39,
-     -39
+     -39,   -39,   -39,   -39,   -39,    67,   -39,   142,   -39,    44,
+     -39,   -39
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -598,8 +598,8 @@ static const yytype_uint8 yydefact[] =
        0,     0,     7,     0,     8,     0,    11,     0,     9,     0,
       10,    31,    32,     0,     0,     0,    23,    19,    20,    21,
       18,    17,     0,     0,     0,     0,     0,     3,     3,     0,
-      12,    13,    16,    14,    15,    33,    35,     0,     3,    36,
-      34
+      12,    13,    16,    14,    15,    33,    35,     0,     3,     0,
+      34,    36
 };
 
   /* YYPGOTO[NTERM-NUM].  */
@@ -628,7 +628,7 @@ static const yytype_uint8 yytable[] =
       62,    44,    90,    10,    11,    12,    13,    14,    15,    48,
       16,    17,    18,    19,    20,    21,    71,    48,    22,    23,
       24,    65,    25,    26,    45,    46,    47,    79,    88,     0,
-       0,    49,     0,     0,     0,     0,    27,     0,     0,     0,
+      91,    49,     0,     0,     0,     0,    27,     0,     0,     0,
        0,     0,    28,    45,    46,    47,     0,    48,    10,    11,
       12,    13,    14,    15,     0,    16,    17,    18,    19,    20,
       21,     0,    77,    22,    23,    24,    48,    25,    26,     0,
@@ -651,7 +651,7 @@ static const yytype_int8 yycheck[] =
       46,    45,    88,     3,     4,     5,     6,     7,     8,    47,
       10,    11,    12,    13,    14,    15,    46,    47,    18,    19,
       20,    22,    22,    23,    24,    25,    26,    42,    21,    -1,
-      -1,    30,    -1,    -1,    -1,    -1,    36,    -1,    -1,    -1,
+      46,    30,    -1,    -1,    -1,    -1,    36,    -1,    -1,    -1,
       -1,    -1,    42,    24,    25,    26,    -1,    47,     3,     4,
        5,     6,     7,     8,    -1,    10,    11,    12,    13,    14,
       15,    -1,    43,    18,    19,    20,    47,    22,    23,    -1,
@@ -676,7 +676,7 @@ static const yytype_uint8 yystos[] =
       46,    46,    46,    53,    53,    22,    43,    53,    53,    53,
       53,    46,    53,    53,    53,    53,    53,    43,    43,    42,
       46,    46,    46,    46,    46,    50,    50,    53,    21,    43,
-      50
+      50,    46
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -694,7 +694,7 @@ static const yytype_uint8 yyr2[] =
        0,     2,     5,     0,     4,     2,     1,     3,     3,     3,
        3,     3,     5,     5,     5,     5,     5,     4,     3,     3,
        3,     3,     2,     3,     1,     1,     1,     1,     1,     1,
-       1,     3,     3,     5,     7,     5,     6
+       1,     3,     3,     5,     7,     5,     7
 };
 
 
@@ -1430,7 +1430,7 @@ yyreduce:
     {
 
 				int i = procuraVariavel((yyvsp[-1]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo("int", (yyvsp[-1]).label);
 					(yyval).traducao = (yyvsp[-1]).traducao + "\tint " + (yyval).label + ";\n";
 				}
@@ -1446,7 +1446,7 @@ yyreduce:
     {
 
 				int i = procuraVariavel((yyvsp[-1]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo("float", (yyvsp[-1]).label);
 					(yyval).traducao = (yyvsp[-1]).traducao + "\tfloat " + (yyval).label + ";\n";
 				}
@@ -1462,7 +1462,7 @@ yyreduce:
     {
 
 				int i = procuraVariavel((yyvsp[-1]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo("char", (yyvsp[-1]).label);
 					(yyval).traducao = (yyvsp[-1]).traducao + "\tchar " + (yyval).label + ";\n";
 				}
@@ -1478,7 +1478,7 @@ yyreduce:
     {
 
 				int i = procuraVariavel((yyvsp[-1]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo("string", (yyvsp[-1]).label);
 					(yyval).traducao = (yyvsp[-1]).traducao + "\tchar " + (yyval).label + "[0];\n";
 				}
@@ -1493,7 +1493,7 @@ yyreduce:
     {
 
 				int i = procuraVariavel((yyvsp[-1]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo("bool", (yyvsp[-1]).label);
 					(yyval).traducao = (yyvsp[-1]).traducao + "\tint " + (yyval).label + ";\n";
 				}
@@ -1509,13 +1509,13 @@ yyreduce:
 
 				string adicional;
 				int i = procuraVariavel((yyvsp[-3]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
-
-					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+					int j = procuraVariavel((yyvsp[-1]).label);
+					if(pilha[j][(yyvsp[-1]).label].tipo == "bool" || pilha[j][(yyvsp[-1]).label].tipo == "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[j][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
@@ -1531,13 +1531,13 @@ yyreduce:
 
 				string adicional;
 				int i = procuraVariavel((yyvsp[-3]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
-
-					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+					int j = procuraVariavel((yyvsp[-1]).label);
+					if(pilha[j][(yyvsp[-1]).label].tipo == "bool" || pilha[j][(yyvsp[-1]).label].tipo == "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+						adicional = "\tfloat " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[j][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
@@ -1553,13 +1553,13 @@ yyreduce:
 
 				string adicional;
 				int i = procuraVariavel((yyvsp[-3]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
-
-					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+					int j = procuraVariavel((yyvsp[-1]).label);
+					if(pilha[j][(yyvsp[-1]).label].tipo == "bool" || pilha[j][(yyvsp[-1]).label].tipo == "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+						adicional = "\tchar " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[j][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
@@ -1575,16 +1575,16 @@ yyreduce:
 
 				string adicional;
 				int i = procuraVariavel((yyvsp[-3]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
-
-					if(pilha[contexto][(yyvsp[-1]).label].tipo != "string")
+					int j = procuraVariavel((yyvsp[-1]).label);
+					if(pilha[j][(yyvsp[-1]).label].tipo != "string")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					
 					else{
-						adicional = "\tchar "  + (yyval).label + "[" + pilha[contexto][(yyvsp[-1]).label].tamanho + "]" + ";\n\tstrcpy(" + (yyval).label + "," + (yyvsp[-1]).label + ");\n";						
-						pilha[contexto][(yyvsp[-3]).label].tamanho = pilha[contexto][(yyvsp[-1]).label].tamanho;
-						pilha[contexto][(yyval).label].tamanho = pilha[contexto][(yyvsp[-1]).label].tamanho;
+						adicional = "\tchar "  + (yyval).label + "[" + pilha[j][(yyvsp[-1]).label].tamanho + "]" + ";\n\tstrcpy(" + (yyval).label + "," + (yyvsp[-1]).label + ");\n";						
+						pilha[i][(yyvsp[-3]).label].tamanho = pilha[j][(yyvsp[-1]).label].tamanho;
+						pilha[i][(yyval).label].tamanho = pilha[j][(yyvsp[-1]).label].tamanho;
 					}
 				}
 				else
@@ -1601,13 +1601,13 @@ yyreduce:
 
 				string adicional;
 				int i = procuraVariavel((yyvsp[-3]).label);
-				if(i == -1){
+				if(i != contexto){
 					(yyval).label = criaAtributo((yyvsp[-4]).label, (yyvsp[-3]).label);
-
-					if(pilha[contexto][(yyvsp[-1]).label].tipo == "bool")
+					int j = procuraVariavel((yyvsp[-1]).label);
+					if(pilha[j][(yyvsp[-1]).label].tipo != "bool")
 						yyerror("\nTIPOS INCOMPATIVEIS");
 					else
-						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[contexto][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
+						adicional = "\tint " + (yyval).label + ";\n\t" + (yyval).label +" = " + verificaCastAtribuicao((yyvsp[-4]).label, pilha[j][(yyvsp[-1]).label].tipo) + (yyvsp[-1]).label + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+(yyvsp[-3]).label+"\" já foi declarada");
@@ -1852,18 +1852,17 @@ yyreduce:
     {
 				int i;
 				if(i = procuraVariavel((yyvsp[-1]).label), i != -1){
-					
 					(yyval).label = pilha[i][(yyvsp[-1]).label].label;
 					(yyval).traducao = (yyvsp[-1]).traducao + "\tcout << " + (yyval).label + " << endl" + ";\n";
 				}
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-#line 1863 "y.tab.c" /* yacc.c:1646  */
+#line 1862 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 398 "sintatica.y" /* yacc.c:1646  */
+#line 397 "sintatica.y" /* yacc.c:1646  */
     {
 				int i;
 				if(i = procuraVariavel((yyvsp[-1]).label), i != -1){
@@ -1874,11 +1873,11 @@ yyreduce:
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-#line 1878 "y.tab.c" /* yacc.c:1646  */
+#line 1877 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 408 "sintatica.y" /* yacc.c:1646  */
+#line 407 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-2]).label);
@@ -1892,11 +1891,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1896 "y.tab.c" /* yacc.c:1646  */
+#line 1895 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 421 "sintatica.y" /* yacc.c:1646  */
+#line 420 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-4]).label);
@@ -1910,11 +1909,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1914 "y.tab.c" /* yacc.c:1646  */
+#line 1913 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 434 "sintatica.y" /* yacc.c:1646  */
+#line 433 "sintatica.y" /* yacc.c:1646  */
     {
 				
 				int i = procuraVariavel((yyvsp[-2]).label);			
@@ -1930,28 +1929,28 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1934 "y.tab.c" /* yacc.c:1646  */
+#line 1933 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 449 "sintatica.y" /* yacc.c:1646  */
+#line 448 "sintatica.y" /* yacc.c:1646  */
     {
 
-				int i = procuraVariavel((yyvsp[-1]).label);	
+				int i = procuraVariavel((yyvsp[-2]).label);	
 				string inicioWhile = criaLabel();
-				if (pilha[i][(yyvsp[-1]).label].tipo == "bool")
+				if (pilha[i][(yyvsp[-2]).label].tipo == "bool")
 				{
-					string adicional = "\tif(" + pilha[i][(yyvsp[-1]).label].label + ") goto " + inicioWhile + ";\n";
-					(yyval).traducao = inicioWhile + ":\n" + (yyvsp[-4]).traducao + (yyvsp[-1]).traducao + adicional;
+					string adicional = "\tif(" + pilha[i][(yyvsp[-2]).label].label + ") goto " + inicioWhile + ";\n";
+					(yyval).traducao = inicioWhile + ":\n" + (yyvsp[-5]).traducao + (yyvsp[-2]).traducao + adicional;
 				}
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1951 "y.tab.c" /* yacc.c:1646  */
+#line 1950 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1955 "y.tab.c" /* yacc.c:1646  */
+#line 1954 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2179,7 +2178,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 461 "sintatica.y" /* yacc.c:1906  */
+#line 460 "sintatica.y" /* yacc.c:1906  */
 
 
 #include "lex.yy.c"
@@ -2189,17 +2188,18 @@ int yyparse();
 string formaExpressao(string resultado, string operando, string label, string label1, string label2){
 
 	string adicional, tipo = resultado;
-
+	int i = procuraVariavel(label1);
+	int j = procuraVariavel(label2);
 	if(operando == " < " || operando == " > " || operando == " <= " || operando == " >= " || operando == " == " || operando == " != ")
 		tipo = "int";
 
-	if(pilha[contexto][label1].tipo != resultado)
+	if(pilha[i][label1].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label1 + ";\n";
 		adicional = aux2 + "\t" + tipo + " " + label + ";\n\t" + label + " = " + aux + operando + label2 + ";\n";
 	}
-	else if(pilha[contexto][label2].tipo != resultado)
+	else if(pilha[j][label2].tipo != resultado)
 	{
 		string aux = criaAtributo(resultado, "");
 		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label2 + ";\n";
@@ -2236,7 +2236,7 @@ string verificaCastAtribuicao(string tipo1, string tipo2) {
 
 int procuraVariavel(string variavel){
 
-	for(int i = 0; i <= contexto; i++){
+	for(int i = contexto; i >= 0; i--){
 	    if(pilha[i].find(variavel) != pilha[i].end()){
 	        return i;
 	    }
