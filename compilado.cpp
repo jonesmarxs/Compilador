@@ -6,25 +6,23 @@ using namespace std;
 
 int main(void)
 {
-	int t0;
-	t0 = 1;
-	int t1;
-	t1 = t0;
-LABEL_0:
-	int t2;
-	t2 = 0;
-	int t3;
-	t3 = t1 > t2;
-	if(!t3) goto LABEL_1;
-	cout << t1 << endl;
-	int t4;
-	t4 = 1;
-	int t6 = (int)t1;
-	int t5;
-	t5 = t6 - t4;
-	t1 = (int)t5;
-	if(t3) goto LABEL_0;
-LABEL_1:
+	int temp0;
+	temp0 = 2;
+	int temp1;
+	temp1 = temp0;
+	int temp2;
+	temp2 = temp1;
+	int temp3 = temp1 + temp2;
+	cout << temp3 << endl;
+	int temp4 = temp1 < temp2;
+	if(!temp4) goto FIM;
+	int temp5;
+	temp5 = 1;
+	int temp6;
+	temp6 = temp5;
+	cout << temp1 << endl;
+FIM:
+	cout << temp4 << endl;
 	return 0;
 }
 
