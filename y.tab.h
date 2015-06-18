@@ -70,15 +70,16 @@ extern int yydebug;
     TK_RELACIONAIS = 280,
     TK_ANDOR = 281,
     TK_INDECREMENTO = 282,
-    TK_MAIOR = 283,
-    TK_MENOR = 284,
-    TK_MAIORIGUAL = 285,
-    TK_MENORIGUAL = 286,
-    TK_IGUAL = 287,
-    TK_DIFERENTE = 288,
-    TK_AND = 289,
-    TK_OR = 290,
-    TK_NEGADO = 291
+    TK_BREAK = 283,
+    TK_MAIOR = 284,
+    TK_MENOR = 285,
+    TK_MAIORIGUAL = 286,
+    TK_MENORIGUAL = 287,
+    TK_IGUAL = 288,
+    TK_DIFERENTE = 289,
+    TK_AND = 290,
+    TK_OR = 291,
+    TK_NEGADO = 292
   };
 #endif
 /* Tokens.  */
@@ -107,15 +108,16 @@ extern int yydebug;
 #define TK_RELACIONAIS 280
 #define TK_ANDOR 281
 #define TK_INDECREMENTO 282
-#define TK_MAIOR 283
-#define TK_MENOR 284
-#define TK_MAIORIGUAL 285
-#define TK_MENORIGUAL 286
-#define TK_IGUAL 287
-#define TK_DIFERENTE 288
-#define TK_AND 289
-#define TK_OR 290
-#define TK_NEGADO 291
+#define TK_BREAK 283
+#define TK_MAIOR 284
+#define TK_MENOR 285
+#define TK_MAIORIGUAL 286
+#define TK_MENORIGUAL 287
+#define TK_IGUAL 288
+#define TK_DIFERENTE 289
+#define TK_AND 290
+#define TK_OR 291
+#define TK_NEGADO 292
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
