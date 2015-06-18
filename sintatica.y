@@ -487,15 +487,40 @@ E 			: TK_TIPO_INT TK_ID ';' {
 			{
 				int i = procuraVariavel($1.label);	
 
-				if(pilha[i][$1.label].tipo == "string" && pilha[i][$1.label].tamanho != "0")
-				{
-					$$.label = criaAtributo("char","");
+				if(i != -1){
+					if(pilha[i][$1.label].tipo == "string" && pilha[i][$1.label].tamanho != "0")
+					{
+						$$.label = criaAtributo("char","");
 
-					string adicional = "\tchar " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
-					$$.traducao = adicional;
-				}					
+						string adicional = "\tchar " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						$$.traducao = adicional;
+					}
+					else if(pilha[i][$1.label].tipo == "vetor_int" && pilha[i][$1.label].tamanho != "0")
+					{
+						$$.label = criaAtributo("int","");
+
+						string adicional = "\tint " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						$$.traducao = adicional;
+					}
+					else if(pilha[i][$1.label].tipo == "vetor_float" && pilha[i][$1.label].tamanho != "0")
+					{
+						$$.label = criaAtributo("float","");
+
+						string adicional = "\tfloat " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						$$.traducao = adicional;
+					}
+					else if(pilha[i][$1.label].tipo == "vetor_bool" && pilha[i][$1.label].tamanho != "0")
+					{
+						$$.label = criaAtributo("bool","");
+ 
+						string adicional = "\tint " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						$$.traducao = adicional;
+					}					
+					else
+						yyerror("ERRO: OPERACAO INVALIDA");			
+				}
 				else
-					yyerror("ERRO: OPERACAO INVALIDA")	;			
+					yyerror("VARIAVEL NAO DECLARADA");	
 			}
 			| TK_ID '[' TK_NUM_INT ':' TK_NUM_INT ']'
 			{
@@ -568,6 +593,21 @@ E 			: TK_TIPO_INT TK_ID ';' {
 				}
 				else
 					yyerror("\nVariavel \""+$2.label+"\" já foi declarada");
+			}
+			| TK_ID '[' TK_NUM_INT ']' '=' E ';'{
+
+				string adicional;
+				int i = procuraVariavel($1.label);
+				int j = procuraVariavel($6.label);	
+
+				if(i != -1){
+
+					adicional = "\t" + pilha[i][$1.label].label + "[" + $3.label + "] = " + pilha[j][$6.label].label + ";\n";		
+				}
+				else
+					yyerror("VARIAVEL NAO DECLARADA");
+
+				$$.traducao = $1.traducao + $3.traducao + $6.traducao + adicional;
 			};
 %%
 
