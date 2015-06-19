@@ -41,6 +41,7 @@ INDECREMENTO (\+\+|\-\-)
 "else"		{yylval.label = yytext; return TK_ELSE;}
 "do"		{yylval.label = yytext; return TK_DO;}
 "while"		{yylval.label = yytext; return TK_WHILE;}
+"for"		{yylval.label = yytext; return TK_FOR;}
 "break"		{yylval.label = yytext; return TK_BREAK;}
 
 [\'].*[\'] { yylval.label = yytext; return TK_CHAR; }
