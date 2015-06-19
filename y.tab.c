@@ -530,8 +530,8 @@ static const yytype_uint16 yyrline[] =
        0,    54,    54,    65,    65,    77,    82,    87,    98,   109,
      120,   130,   140,   157,   174,   191,   214,   231,   247,   273,
      291,   308,   325,   340,   345,   350,   355,   366,   372,   381,
-     386,   391,   400,   410,   423,   436,   443,   450,   456,   478,
-     500,   521,   560,   602,   614,   626,   638
+     386,   391,   404,   414,   427,   441,   448,   460,   471,   493,
+     515,   536,   575,   652,   665,   678,   691
 };
 #endif
 
@@ -1893,17 +1893,21 @@ yyreduce:
     {
 				int i;
 				if(i = procuraVariavel((yyvsp[-1]).label), i != -1){
-					(yyval).label = pilha[i][(yyvsp[-1]).label].label;
-					(yyval).traducao = (yyvsp[-1]).traducao + "\tcout << " + (yyval).label + " << endl" + ";\n";
+					if(pilha[i][(yyvsp[-1]).label].tipo[0] != 'v'){
+						(yyval).label = pilha[i][(yyvsp[-1]).label].label;
+						(yyval).traducao = (yyvsp[-1]).traducao + "\tcout << " + (yyval).label + " << endl" + ";\n";
+					}
+					else
+						cout << "aqui" << endl;
 				}
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-#line 1903 "y.tab.c" /* yacc.c:1646  */
+#line 1907 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 400 "sintatica.y" /* yacc.c:1646  */
+#line 404 "sintatica.y" /* yacc.c:1646  */
     {
 				int i;
 				if(i = procuraVariavel((yyvsp[-1]).label), i != -1){
@@ -1914,11 +1918,11 @@ yyreduce:
 				else
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
-#line 1918 "y.tab.c" /* yacc.c:1646  */
+#line 1922 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 410 "sintatica.y" /* yacc.c:1646  */
+#line 414 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-2]).label);
@@ -1932,16 +1936,17 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1936 "y.tab.c" /* yacc.c:1646  */
+#line 1940 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 423 "sintatica.y" /* yacc.c:1646  */
+#line 427 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-4]).label);
 				string labelIf = criaLabel();
 				string labelElse = criaLabel();
+
 				if (pilha[i][(yyvsp[-4]).label].tipo == "bool")
 				{
 					string adicional = "\tif(!" + pilha[i][(yyvsp[-4]).label].label + ") goto " + labelIf + ";\n";					
@@ -1950,43 +1955,53 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 1954 "y.tab.c" /* yacc.c:1646  */
+#line 1959 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 437 "sintatica.y" /* yacc.c:1646  */
+#line 442 "sintatica.y" /* yacc.c:1646  */
     {
 				string label = criaLabel();
 				pilhaBreak.push_back(label);
 
 				(yyval).traducao = "\tgoto " + label + ";\n";
 			}
-#line 1965 "y.tab.c" /* yacc.c:1646  */
+#line 1970 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 444 "sintatica.y" /* yacc.c:1646  */
+#line 449 "sintatica.y" /* yacc.c:1646  */
     {	
 				int i = procuraVariavel((yyvsp[-1]).label);	
-				(yyval).label = pilha[i][(yyvsp[-1]).label].label;
-				string adicional = "\t" + pilha[i][(yyvsp[-1]).label].label + " = " + pilha[i][(yyvsp[-1]).label].label + " " + (yyvsp[0]).label[0] +" 1;\n";
-				(yyval).traducao = adicional;				
-			}
-#line 1976 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 37:
-#line 451 "sintatica.y" /* yacc.c:1646  */
-    {		
-				int i = procuraVariavel((yyvsp[0]).label);		
-				string adicional = "\t" + pilha[i][(yyvsp[0]).label].label + " = " + pilha[i][(yyvsp[0]).label].label + " " + (yyvsp[-1]).label[0] +" 1;\n";
+				string adicional;
+				if(i != -1){
+					(yyval).label = pilha[i][(yyvsp[-1]).label].label;
+					adicional = "\t" + pilha[i][(yyvsp[-1]).label].label + " = " + pilha[i][(yyvsp[-1]).label].label + " " + (yyvsp[0]).label[0] +" 1;\n";
+				}
+				else
+					yyerror("\nVARIAVEL NAO DECLARADA");
 				(yyval).traducao = adicional;				
 			}
 #line 1986 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 37:
+#line 461 "sintatica.y" /* yacc.c:1646  */
+    {		
+				int i = procuraVariavel((yyvsp[0]).label);		
+				string adicional;
+				
+				if(i != -1){
+					adicional = "\t" + pilha[i][(yyvsp[0]).label].label + " = " + pilha[i][(yyvsp[0]).label].label + " " + (yyvsp[-1]).label[0] +" 1;\n";
+				}
+				
+				(yyval).traducao = adicional;				
+			}
+#line 2001 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 38:
-#line 457 "sintatica.y" /* yacc.c:1646  */
+#line 472 "sintatica.y" /* yacc.c:1646  */
     {
 				string inicioFor = criaLabel();
 				string fimFor = criaLabel();
@@ -2005,14 +2020,14 @@ yyreduce:
 					string adicional1 = "\t" + pilha[i][(yyvsp[-8]).label].label + " = " + (yyvsp[-6]).label + ";\n";
 					string adicional2 = "\tif(!" + pilha[j][(yyvsp[-4]).label].label + ") goto " + fimFor + ";\n";
 
-					(yyval).traducao = adicional1 + inicioFor + ":\n" + (yyvsp[-4]).traducao + adicional2 + (yyvsp[0]).traducao + (yyvsp[-2]).traducao +"\tgoto "+ inicioFor + ";\n"+fimFor + ":\n";
+					(yyval).traducao = (yyvsp[-6]).traducao + adicional1 + inicioFor + ":\n" + (yyvsp[-4]).traducao + adicional2 + (yyvsp[0]).traducao + (yyvsp[-2]).traducao +"\tgoto "+ inicioFor + ";\n"+fimFor + ":\n";
 				}
 			}
-#line 2012 "y.tab.c" /* yacc.c:1646  */
+#line 2027 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 478 "sintatica.y" /* yacc.c:1646  */
+#line 493 "sintatica.y" /* yacc.c:1646  */
     {
 				
 				int i = procuraVariavel((yyvsp[-2]).label);			
@@ -2035,11 +2050,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 2039 "y.tab.c" /* yacc.c:1646  */
+#line 2054 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 500 "sintatica.y" /* yacc.c:1646  */
+#line 515 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-2]).label);	
@@ -2061,11 +2076,11 @@ yyreduce:
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-#line 2065 "y.tab.c" /* yacc.c:1646  */
+#line 2080 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 522 "sintatica.y" /* yacc.c:1646  */
+#line 537 "sintatica.y" /* yacc.c:1646  */
     {
 				int i = procuraVariavel((yyvsp[-3]).label);	
 
@@ -2104,29 +2119,29 @@ yyreduce:
 				else
 					yyerror("VARIAVEL NAO DECLARADA");	
 			}
-#line 2108 "y.tab.c" /* yacc.c:1646  */
+#line 2123 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 561 "sintatica.y" /* yacc.c:1646  */
+#line 576 "sintatica.y" /* yacc.c:1646  */
     {
 				int i = procuraVariavel((yyvsp[-5]).label);	
 
 				if(pilha[i][(yyvsp[-5]).label].tipo == "string" && pilha[i][(yyvsp[-5]).label].tamanho != "0")
 				{
 					(yyval).label = criaAtributo("string","");
+					int j = procuraVariavel((yyvsp[-1]).label);
+					int tam1 = atoi(pilha[j][(yyvsp[-1]).label].traducao.c_str());
+					j = procuraVariavel((yyvsp[-3]).label);
+					int tam2 = atoi(pilha[j][(yyvsp[-3]).label].traducao.c_str());
 
-					int j = procuraVariavel((yyval).label);
-					int tam1 = atoi((yyvsp[-1]).label.c_str());
-					int tam2 = atoi((yyvsp[-3]).label.c_str());
 					int tamanho = tam1 - tam2 + 1;
-
 					stringstream tamanhoS;   
 				    tamanhoS << tamanho;
 				    string tamanhoNovaString;
 				    tamanhoNovaString = tamanhoS.str();
 
-				    pilha[j][(yyval).label].tamanho = tamanhoNovaString;
+				    pilha[contexto][(yyval).label].tamanho = tamanhoNovaString;
 
 				    string adicional1 = "\tchar " + (yyval).label + "[" + tamanhoNovaString + "];\n\t" + (yyval).label + "[" + tamanhoNovaString + "] = \'\\0\';\n"; 
 
@@ -2140,21 +2155,56 @@ yyreduce:
 				    string adicional2 = "\tint " + pilha[contexto][aux].label + ";\n" + "\tint " + pilha[contexto][aux2].label+ ";\n" + "\tint " + pilha[contexto][aux3].label + ";\n";
 				    string adicional3 = "\t" + pilha[contexto][aux].label + " = 0;\n" + "\t" + pilha[contexto][aux2].label + " = 0;\n" + "\t" + pilha[contexto][aux3].label + " = 0;\n" + inicioWhile+":\n";
 				    string adicional4 = "\t" + pilha[contexto][aux2].label + " = " + pilha[contexto][aux].label + " + " + (yyvsp[-3]).label + ";\n";
-				    string adicional5 = "\t" + pilha[j][(yyval).label].label + "[" + pilha[contexto][aux].label + "]" + " = " + pilha[i][(yyvsp[-5]).label].label + "[" + pilha[contexto][aux2].label + "];\n";
+				    string adicional5 = "\t" + pilha[contexto][(yyval).label].label + "[" + pilha[contexto][aux].label + "]" + " = " + pilha[i][(yyvsp[-5]).label].label + "[" + pilha[contexto][aux2].label + "];\n";
 				    string adicional6 = "\t" + pilha[contexto][aux].label + " = " + pilha[contexto][aux].label + " + " + "1;\n"; 
 				    string adicional7 = "\t" + pilha[contexto][aux3].label + " = " + pilha[contexto][aux].label + " < " + tamanhoNovaString + ";\n";
 				    string adicional8 = "\tif(" + pilha[contexto][aux3].label + ") goto " + inicioWhile + ";\n";
-					(yyval).traducao = adicional1 + adicional2 + adicional3 + adicional4 + adicional5 + adicional6 + adicional7 +adicional8 ;
+					(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + adicional1 + adicional2 + adicional3 + adicional4 + adicional5 + adicional6 + adicional7 +adicional8 ;
 					
-				}					
+				}	
+				else if(pilha[i][(yyvsp[-5]).label].tamanho != "0"){
+					(yyval).label = criaAtributo(pilha[i][(yyvsp[-5]).label].tipo,"");
+
+					int j = procuraVariavel((yyvsp[-1]).label);
+					int tam1 = atoi(pilha[j][(yyvsp[-1]).label].traducao.c_str());
+					j = procuraVariavel((yyvsp[-3]).label);
+					int tam2 = atoi(pilha[j][(yyvsp[-3]).label].traducao.c_str());
+
+					int tamanho = tam1 - tam2 + 1;
+
+					stringstream tamanhoS;   
+				    tamanhoS << tamanho;
+				    string tamanhoNovaString;
+				    tamanhoNovaString = tamanhoS.str();
+
+				    pilha[contexto][(yyval).label].tamanho = tamanhoNovaString;
+
+				    string tipo = pilha[i][(yyvsp[-5]).label].tipo == "vetor_float" ? "float" : "int";
+				    string adicional1 = "\t"+ tipo + " " + (yyval).label + "[" + tamanhoNovaString + "];\n"; 
+
+				    string aux = criaAtributo("int","");
+				    string aux2 = criaAtributo("int","");				  
+				    string aux3 = criaAtributo("int","");
+
+				    string inicioWhile = criaLabel();
+
+				    string adicional2 = "\tint " + pilha[contexto][aux].label + ";\n" + "\tint " + pilha[contexto][aux2].label+ ";\n" + "\tint " + pilha[contexto][aux3].label + ";\n";
+				    string adicional3 = "\t" + pilha[contexto][aux].label + " = 0;\n" + "\t" + pilha[contexto][aux2].label + " = 0;\n" + "\t" + pilha[contexto][aux3].label + " = 0;\n" + inicioWhile+":\n";
+				    string adicional4 = "\t" + pilha[contexto][aux2].label + " = " + pilha[contexto][aux].label + " + " + (yyvsp[-3]).label + ";\n";
+				    string adicional5 = "\t" + pilha[contexto][(yyval).label].label + "[" + pilha[contexto][aux].label + "]" + " = " + pilha[i][(yyvsp[-5]).label].label + "[" + pilha[contexto][aux2].label + "];\n";
+				    string adicional6 = "\t" + pilha[contexto][aux].label + " = " + pilha[contexto][aux].label + " + " + "1;\n"; 
+				    string adicional7 = "\t" + pilha[contexto][aux3].label + " = " + pilha[contexto][aux].label + " < " + tamanhoNovaString + ";\n";
+				    string adicional8 = "\tif(" + pilha[contexto][aux3].label + ") goto " + inicioWhile + ";\n";
+					(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + adicional1 + adicional2 + adicional3 + adicional4 + adicional5 + adicional6 + adicional7 +adicional8 ;
+				}				
 				else
 					yyerror("ERRO: OPERACAO INVALIDA")	;			
 			}
-#line 2154 "y.tab.c" /* yacc.c:1646  */
+#line 2204 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 602 "sintatica.y" /* yacc.c:1646  */
+#line 652 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-4]).label);
@@ -2162,16 +2212,17 @@ yyreduce:
 
 				if(i != contexto){
 					(yyval).label = criaAtributo("vetor_int", (yyvsp[-4]).label);
+					pilha[contexto][(yyval).label].tamanho = pilha[j][(yyvsp[-2]).label].label;
 					(yyval).traducao = (yyvsp[-4]).traducao + (yyvsp[-2]).traducao + "\tint " + (yyval).label + "[" + pilha[j][(yyvsp[-2]).label].label + "]" + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+(yyvsp[-4]).label+"\" já foi declarada");
 			}
-#line 2171 "y.tab.c" /* yacc.c:1646  */
+#line 2222 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 614 "sintatica.y" /* yacc.c:1646  */
+#line 665 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-4]).label);
@@ -2179,16 +2230,17 @@ yyreduce:
 
 				if(i != contexto){
 					(yyval).label = criaAtributo("vetor_float", (yyvsp[-4]).label);
+					pilha[contexto][(yyval).label].tamanho = pilha[j][(yyvsp[-2]).label].label;
 					(yyval).traducao = (yyvsp[-4]).traducao + (yyvsp[-2]).traducao + "\tfloat " + (yyval).label + "[" + pilha[j][(yyvsp[-2]).label].label + "]" + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+(yyvsp[-4]).label+"\" já foi declarada");
 			}
-#line 2188 "y.tab.c" /* yacc.c:1646  */
+#line 2240 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 626 "sintatica.y" /* yacc.c:1646  */
+#line 678 "sintatica.y" /* yacc.c:1646  */
     {
 
 				int i = procuraVariavel((yyvsp[-4]).label);
@@ -2196,16 +2248,17 @@ yyreduce:
 
 				if(i != contexto){
 					(yyval).label = criaAtributo("vetor_bool", (yyvsp[-4]).label);
+					pilha[contexto][(yyval).label].tamanho = pilha[j][(yyvsp[-2]).label].label;
 					(yyval).traducao = (yyvsp[-4]).traducao + (yyvsp[-2]).traducao + "\tint " + (yyval).label + "[" + pilha[j][(yyvsp[-2]).label].label + "]" + ";\n";
 				}
 				else
 					yyerror("\nVariavel \""+(yyvsp[-4]).label+"\" já foi declarada");
 			}
-#line 2205 "y.tab.c" /* yacc.c:1646  */
+#line 2258 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 638 "sintatica.y" /* yacc.c:1646  */
+#line 691 "sintatica.y" /* yacc.c:1646  */
     {
 
 				string adicional;
@@ -2221,11 +2274,11 @@ yyreduce:
 
 				(yyval).traducao = (yyvsp[-6]).traducao + (yyvsp[-4]).traducao + (yyvsp[-1]).traducao + adicional;
 			}
-#line 2225 "y.tab.c" /* yacc.c:1646  */
+#line 2278 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2229 "y.tab.c" /* yacc.c:1646  */
+#line 2282 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2453,7 +2506,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 653 "sintatica.y" /* yacc.c:1906  */
+#line 706 "sintatica.y" /* yacc.c:1906  */
 
 
 #include "lex.yy.c"

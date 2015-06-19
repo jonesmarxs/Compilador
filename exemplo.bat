@@ -1,7 +1,9 @@
 int main()
 {	
-	int a[2];
-	a[1] = 1;
-	a[0] = 1;
-	print a[1];
+	int i;
+	int vet[5];
+	for(i = 0; i < 5; i++){
+		vet[i] = i;
+	}
+	print vet[1:2];
 }
