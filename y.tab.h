@@ -70,7 +70,7 @@ extern int yydebug;
     TK_ARITMETICOS = 280,
     TK_RELACIONAIS = 281,
     TK_ANDOR = 282,
-    TK_INDECREMENTO = 283,
+    TK_INCREMENTO = 283,
     TK_BREAK = 284,
     TK_MAIOR = 285,
     TK_MENOR = 286,
@@ -109,7 +109,7 @@ extern int yydebug;
 #define TK_ARITMETICOS 280
 #define TK_RELACIONAIS 281
 #define TK_ANDOR 282
-#define TK_INDECREMENTO 283
+#define TK_INCREMENTO 283
 #define TK_BREAK 284
 #define TK_MAIOR 285
 #define TK_MENOR 286

@@ -9,14 +9,14 @@ DIGITO [0-9]
 LETRA [A-Za-z_]
 
 DELIM {ESPACO}+
-NUM {DIGITO}+
+NUM "-"?{DIGITO}+
 REAL {NUM}+("."{NUM}+)?
 CHAR \'({LETRA}|{NUM})\'
 ID {LETRA}({LETRA}|{NUM})*
 RELACIONAIS (==|!=|>=|<=|<|>)
 ANDOR (&&|\|\|)
 ARITMETICOS [+\-*/]
-INDECREMENTO (\+\+|\-\-)
+INCREMENTO (\+\+|\-\-)
 
 %%
 
@@ -53,7 +53,7 @@ INDECREMENTO (\+\+|\-\-)
 {RELACIONAIS}	{ yylval.label = yytext; return TK_RELACIONAIS; }
 {ANDOR}			{ yylval.label = yytext; return TK_ANDOR; }
 "!"				{yylval.label = yytext; return TK_NEGADO;}
-{INDECREMENTO}	{yylval.label = yytext; return TK_INDECREMENTO;}
+{INCREMENTO}	{yylval.label = yytext; return TK_INCREMENTO;}
 
 [(){}[\];,:]		{ return *yytext; }
 
