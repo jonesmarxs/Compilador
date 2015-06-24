@@ -51,15 +51,9 @@ string criaLabel();
 
 %%
 
-S			: GLOBAL MAIN {
-				cout << "#include<stdio.h>\n";
-				cout << "#include<string.h>\n";
-				cout << "#include<iostream>\n\n";
-				cout << "using namespace std;\n\n";
-				cout << "int main(void)\n{\n" ;
-				cout << $1.traducao + "\n" + $2.traducao + "\treturn 0;\n}";
-			}
-			| MAIN {
+S 			: S1;
+
+S1			: MAIN {
 				cout << "#include<stdio.h>\n";
 				cout << "#include<string.h>\n";
 				cout << "#include<iostream>\n\n";
@@ -67,16 +61,28 @@ S			: GLOBAL MAIN {
 				cout << "int main(void)\n{\n" ;
 				cout << $1.traducao + "\treturn 0;\n}";
 			}
+			| GLOBAL MAIN {
+				cout << "#include<stdio.h>\n";
+				cout << "#include<string.h>\n";
+				cout << "#include<iostream>\n\n";
+				cout << "using namespace std;\n\n";
+				cout << "int main(void)\n{\n" ;
+				cout << $1.traducao + $2.traducao + "\treturn 0;\n}";
+			}
 			;
 
-GLOBAL 		: DECLARACAO GLOBAL
-			{
-				$$.traducao =  $1.traducao + $2.traducao ; 
+GLOBAL		: DECLARACAO {
+				$$.traducao =  $1.traducao; 
+			}
+			| ATRIBUICAO {
+				$$.traducao =  $1.traducao; 
+			}
+			| DECLARACAO GLOBAL {
+				$$.traducao =  $1.traducao + $2.traducao; 
 			}
 			| ATRIBUICAO GLOBAL {
-				$$.traducao =  $1.traducao + $2.traducao ; 
+				$$.traducao =  $1.traducao + $2.traducao; 
 			}
-			|
 			;
 
 MAIN        : TK_TIPO_INT TK_MAIN '('')' BLOCO {				
@@ -93,7 +99,8 @@ BLOCO		: {	contexto++;
 			
 				contexto--;
 				pilha.pop_back();
-			};
+			}
+			;
 
 COMANDOS	: E {
 				$$.traducao = $1.traducao;
