@@ -44,7 +44,7 @@ INCREMENTO (\+\+|\-\-)
 "for"		{yylval.label = yytext; return TK_FOR;}
 "break"		{yylval.label = yytext; return TK_BREAK;}
 
-[\'].*[\'] { yylval.label = yytext; return TK_CHAR; }
+[\'].[\'] { yylval.label = yytext; return TK_CHAR; }
 [\"].*[\"] 		{ yylval.label = yytext; return TK_STRING; }
 
 "="				{ return *yytext; }

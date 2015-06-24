@@ -6,9 +6,10 @@ using namespace std;
 
 int main(void)
 {
-	int t0;
-	t0 = 1;
-	int t1;
+	char t0;
+	t0 = '1';
+	char t1;
 	t1 = t0;
+	cout << t1 << endl;
 	return 0;
 }
