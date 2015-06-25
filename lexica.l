@@ -1,7 +1,5 @@
 %{
 #include <string>
-
-int linha = 1;
 %}
 
 ESPACO [ \t]

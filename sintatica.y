@@ -1,38 +1,8 @@
 %{
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <map>
-#include <vector>
-#include "tabelaDeCompatibilidade.hpp"
-
-#define YYSTYPE atributos
-
-using namespace std;
-
-typedef struct atributos
-{
-	string label;
-	string traducao;
-	string tipo;
-	string tamanho;
-} Atributos;
-
-vector<map <string, Atributos> > pilha;
-vector<string> pilhaBreak;
-
-int contexto = -1;
+#include "funcoes.hpp"
 
 int yylex(void);
 void yyerror(string);
-string criaVariavel();
-string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB);
-string criaAtributo(string tipo, string traducao);
-string verificaCastAtribuicao(string tipo1, string tipo2);
-string formaExpressao(string operando, string resultado, string label, string label1, string label2);
-int procuraVariavel(string variavel);
-string criaLabel();
-
 %}
 
 %token TK_NUM_INT TK_NUM_FLOAT TK_TRUE TK_FALSE TK_CHAR TK_STRING
@@ -59,32 +29,16 @@ S			: GLOBAL MAIN {
 				cout << "int main(void)\n{\n" ;
 				cout << $1.traducao + "\n" + $2.traducao + "\treturn 0;\n}";
 			}
-			| MAIN {
-				cout << "#include<stdio.h>\n";
-				cout << "#include<string.h>\n";
-				cout << "#include<iostream>\n\n";
-				cout << "using namespace std;\n\n";
-				cout << "int main(void)\n{\n" ;
-				cout << $1.traducao + "\treturn 0;\n}";
+			;
+
+GLOBAL		: DECLARACAO GLOBAL {
+				$$.traducao = $1.traducao + $2.traducao;
 			}
+			| 
 			;
 
 MAIN        : TK_TIPO_INT TK_MAIN '('')' BLOCO {				
 				$$.traducao = $5.traducao; 
-			}
-			;
-
-GLOBAL 		: ATRIBUICAO {
-				$$.traducao =  $1.traducao; 
-			}
-			| DECLARACAO {
-				$$.traducao =  $1.traducao; 
-			}
-			| ATRIBUICAO GLOBAL {
-				$$.traducao =  $1.traducao + $2.traducao; 
-			}
-			| DECLARACAO GLOBAL {
-				$$.traducao =  $1.traducao + $2.traducao; 
 			}
 			;
 
@@ -101,25 +55,7 @@ BLOCO		: {	contexto++;
 			}
 			;
 
-COMANDOS	: E {
-				$$.traducao = $1.traducao;
-			}
-			| DECLARACAO {
-				$$.traducao = $1.traducao;
-			}
-			| ATRIBUICAO {
-				$$.traducao = $1.traducao;
-			}
-			| IO {
-				$$.traducao = $1.traducao;
-			} 
-			| CONDICIONAL {
-				$$.traducao = $1.traducao;
-			}
-			| LOOP {
-				$$.traducao = $1.traducao;
-			}
-			| VETOR {
+COMANDOS	: IO {
 				$$.traducao = $1.traducao;
 			}
 			| E  COMANDOS {
@@ -147,7 +83,7 @@ COMANDOS	: E {
 			;
 
 DECLARACAO	: TK_TIPO_INT TK_ID ';' {
-
+				
 				int i = procuraVariavel($2.label);
 				if(i != contexto){
 					$$.label = criaAtributo("int", $2.label);
@@ -379,8 +315,8 @@ E			: E '.' E {
 
 					string aux0 = "\tchar " + $$.label + "[" + tamanhoNovaString + "] = \"\";\n";
 					string aux1 = "\tstrcat(" + $$.label + "," + $1.label + ");\n";
-					string aux2 = "\tstrcat(" + $$.label + "," + $3.label + ");\n";
-					adicional = aux0 + aux1 + aux2;
+					string varBase = "\tstrcat(" + $$.label + "," + $3.label + ");\n";
+					adicional = aux0 + aux1 + varBase;
 				}
 				else
 					yyerror("\nOPERACAO INVALIDA");
@@ -575,21 +511,21 @@ IO			: TK_PRINT E ';' {
 						
 						if(pilha[i][$2.label].tamanho != "0"){
 
-						    string aux = criaAtributo("int","");				  
-						    string aux3 = criaAtributo("int","");
+						    string varContador = criaAtributo("int","");				  
+						    string varTeste = criaAtributo("int","");
 
 						    string inicioWhile = criaLabel();
 
-						    string adicional1 = "\tint " + pilha[contexto][aux].label + ";\n";
-						    string adicional2 = "\tint " + pilha[contexto][aux3].label + ";\n";
-						    string adicional3 = "\t" + pilha[contexto][aux3].label + " = 0;\n";
-						    string adicional4 = "\t" + pilha[contexto][aux].label + " = 0;\n" + inicioWhile + ":\n";
-						    string adicional5 = "\tcout << " + pilha[i][$2.label].label + "[" + pilha[contexto][aux].label + "] << endl" + ";\n";
-						    string adicional6 = "\t" + pilha[contexto][aux].label + " = " + pilha[contexto][aux].label + " + " + "1;\n"; 
-						    string adicional7 = "\t" + pilha[contexto][aux3].label + " = " + pilha[contexto][aux].label + " < " + pilha[i][$2.label].tamanho + ";\n";
-						    string adicional8 = "\tif(" + pilha[contexto][aux3].label + ") goto " + inicioWhile + ";\n";
+						    string adicional = "\tint " + pilha[contexto][varContador].label + ";\n";
+						    adicional += "\tint " + pilha[contexto][varTeste].label + ";\n";
+						    adicional += "\t" + pilha[contexto][varTeste].label + " = 0;\n";
+						    adicional += "\t" + pilha[contexto][varContador].label + " = 0;\n" + inicioWhile + ":\n";
+						    adicional += "\tcout << " + pilha[i][$2.label].label + "[" + pilha[contexto][varContador].label + "] << endl" + ";\n";
+						    adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + "1;\n"; 
+						    adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + pilha[i][$2.label].tamanho + ";\n";
+						    adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
 							
-							$$.traducao = $2.traducao + adicional1 + adicional2 + adicional3 + adicional4 + adicional5 + adicional6 + adicional7 + adicional8;
+							$$.traducao = $2.traducao + adicional;
 						}	
 					}
 				}
@@ -602,21 +538,21 @@ IO			: TK_PRINT E ';' {
 
 					if(pilha[i][$2.label].tamanho != "0"){
 
-					    string aux = criaAtributo("int","");				  
-					    string aux3 = criaAtributo("int","");
+					    string varContador = criaAtributo("int","");				  
+					    string varTeste = criaAtributo("int","");
 
 					    string inicioWhile = criaLabel();
 
-					    string adicional1 = "\tint " + pilha[contexto][aux].label + ";\n";
-					    string adicional2 = "\tint " + pilha[contexto][aux3].label + ";\n";
-					    string adicional3 = "\t" + pilha[contexto][aux3].label + " = 0;\n";
-					    string adicional4 = "\t" + pilha[contexto][aux].label + " = 0;\n" + inicioWhile + ":\n";
-					    string adicional5 = "\tcout << " + pilha[i][$2.label].label + "[" + pilha[contexto][aux].label + "] << endl" + ";\n";
-					    string adicional6 = "\t" + pilha[contexto][aux].label + " = " + pilha[contexto][aux].label + " + " + "1;\n"; 
-					    string adicional7 = "\t" + pilha[contexto][aux3].label + " = " + pilha[contexto][aux].label + " < " + pilha[i][$2.label].tamanho + ";\n";
-					    string adicional8 = "\tif(" + pilha[contexto][aux3].label + ") goto " + inicioWhile + ";\n";
+					    string adicional = "\tint " + pilha[contexto][varContador].label + ";\n";
+					    adicional += "\tint " + pilha[contexto][varTeste].label + ";\n";
+					    adicional += "\t" + pilha[contexto][varTeste].label + " = 0;\n";
+					    adicional += "\t" + pilha[contexto][varContador].label + " = 0;\n" + inicioWhile + ":\n";
+					    adicional += "\tcout << " + pilha[i][$2.label].label + "[" + pilha[contexto][varContador].label + "] << endl" + ";\n";
+					    adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + "1;\n"; 
+					    adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + pilha[i][$2.label].tamanho + ";\n";
+					    adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
 						
-						$$.traducao = $2.traducao + adicional1 + adicional2 + adicional3 + adicional4 + adicional5 + adicional6 + adicional7 + adicional8;
+						$$.traducao = $2.traducao + adicional;
 					}
 				}
 				else
@@ -685,10 +621,9 @@ LOOP		: TK_BREAK ';'
 
 				if (pilha[j][$4.label].tipo == "bool")
 				{
-					//string adicional1 = "\t" + pilha[i][$3.label].label + " = " + $5.label + ";\n";
-					string adicional2 = "\tif(!" + pilha[j][$4.label].label + ") goto " + fimFor + ";\n";
+					string adicional = "\tif(!" + pilha[j][$4.label].label + ") goto " + fimFor + ";\n";
 
-					$$.traducao = $3.traducao + inicioFor + ":\n" + $4.traducao + adicional2 + $8.traducao + $6.traducao +"\tgoto "+ inicioFor + ";\n"+fimFor + ":\n";
+					$$.traducao = $3.traducao + inicioFor + ":\n" + $4.traducao + adicional + $8.traducao + $6.traducao +"\tgoto "+ inicioFor + ";\n"+fimFor + ":\n";
 				}
 			}
 			| TK_WHILE '(' E ')' BLOCO {
@@ -757,21 +692,21 @@ VETOR		: TK_ID '[' E ':' E ']'
 
 				    string adicional1 = "\tchar " + $$.label + "[" + tamanhoNovaString + "];\n\t" + $$.label + "[" + tamanhoNovaString + "] = \'\\0\';\n"; 
 
-				    string aux = criaAtributo("int","");
-				    string aux2 = criaAtributo("int","");				  
-				    string aux3 = criaAtributo("int","");
+				    string varContador = criaAtributo("int","");
+				    string varBase = criaAtributo("int","");				  
+				    string varTeste = criaAtributo("int","");
 
 
 				    string inicioWhile = criaLabel();
 
-				    string adicional2 = "\tint " + pilha[contexto][aux].label + ";\n" + "\tint " + pilha[contexto][aux2].label+ ";\n" + "\tint " + pilha[contexto][aux3].label + ";\n";
-				    string adicional3 = "\t" + pilha[contexto][aux].label + " = 0;\n" + "\t" + pilha[contexto][aux2].label + " = 0;\n" + "\t" + pilha[contexto][aux3].label + " = 0;\n" + inicioWhile+":\n";
-				    string adicional4 = "\t" + pilha[contexto][aux2].label + " = " + pilha[contexto][aux].label + " + " + $3.label + ";\n";
-				    string adicional5 = "\t" + pilha[contexto][$$.label].label + "[" + pilha[contexto][aux].label + "]" + " = " + pilha[i][$1.label].label + "[" + pilha[contexto][aux2].label + "];\n";
-				    string adicional6 = "\t" + pilha[contexto][aux].label + " = " + pilha[contexto][aux].label + " + " + "1;\n"; 
-				    string adicional7 = "\t" + pilha[contexto][aux3].label + " = " + pilha[contexto][aux].label + " < " + tamanhoNovaString + ";\n";
-				    string adicional8 = "\tif(" + pilha[contexto][aux3].label + ") goto " + inicioWhile + ";\n";
-					$$.traducao = $3.traducao + $5.traducao + adicional1 + adicional2 + adicional3 + adicional4 + adicional5 + adicional6 + adicional7 +adicional8 ;
+				    string adicional = "\tint " + pilha[contexto][varContador].label + ";\n" + "\tint " + pilha[contexto][varBase].label+ ";\n" + "\tint " + pilha[contexto][varTeste].label + ";\n";
+				    adicional += "\t" + pilha[contexto][varContador].label + " = 0;\n" + "\t" + pilha[contexto][varBase].label + " = 0;\n" + "\t" + pilha[contexto][varTeste].label + " = 0;\n" + inicioWhile+":\n";
+				    adicional += "\t" + pilha[contexto][varBase].label + " = " + pilha[contexto][varContador].label + " + " + $3.label + ";\n";
+				    adicional += "\t" + pilha[contexto][$$.label].label + "[" + pilha[contexto][varContador].label + "]" + " = " + pilha[i][$1.label].label + "[" + pilha[contexto][varBase].label + "];\n";
+				    adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + "1;\n"; 
+				    adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + tamanhoNovaString + ";\n";
+				    adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
+					$$.traducao = $3.traducao + $5.traducao + adicional;
 					
 				}	
 				else if(pilha[i][$1.label].tamanho != "0"){
@@ -792,22 +727,22 @@ VETOR		: TK_ID '[' E ':' E ']'
 				    pilha[contexto][$$.label].tamanho = tamanhoNovaString;
 
 				    string tipo = pilha[i][$1.label].tipo == "vetor_float" ? "float" : "int";
-				    string adicional1 = "\t"+ tipo + " " + $$.label + "[" + tamanhoNovaString + "];\n"; 
+				    string adicional = "\t"+ tipo + " " + $$.label + "[" + tamanhoNovaString + "];\n"; 
 
-				    string aux = criaAtributo("int","");
-				    string aux2 = criaAtributo("int","");				  
-				    string aux3 = criaAtributo("int","");
+				    string varContador = criaAtributo("int","");
+				    string varBase = criaAtributo("int","");				  
+				    string varTeste = criaAtributo("int","");
 
 				    string inicioWhile = criaLabel();
 
-				    string adicional2 = "\tint " + pilha[contexto][aux].label + ";\n" + "\tint " + pilha[contexto][aux2].label+ ";\n" + "\tint " + pilha[contexto][aux3].label + ";\n";
-				    string adicional3 = "\t" + pilha[contexto][aux].label + " = 0;\n" + "\t" + pilha[contexto][aux2].label + " = 0;\n" + "\t" + pilha[contexto][aux3].label + " = 0;\n" + inicioWhile+":\n";
-				    string adicional4 = "\t" + pilha[contexto][aux2].label + " = " + pilha[contexto][aux].label + " + " + $3.label + ";\n";
-				    string adicional5 = "\t" + pilha[contexto][$$.label].label + "[" + pilha[contexto][aux].label + "]" + " = " + pilha[i][$1.label].label + "[" + pilha[contexto][aux2].label + "];\n";
-				    string adicional6 = "\t" + pilha[contexto][aux].label + " = " + pilha[contexto][aux].label + " + " + "1;\n"; 
-				    string adicional7 = "\t" + pilha[contexto][aux3].label + " = " + pilha[contexto][aux].label + " < " + tamanhoNovaString + ";\n";
-				    string adicional8 = "\tif(" + pilha[contexto][aux3].label + ") goto " + inicioWhile + ";\n";
-					$$.traducao = $3.traducao + $5.traducao + adicional1 + adicional2 + adicional3 + adicional4 + adicional5 + adicional6 + adicional7 +adicional8 ;
+				    adicional += "\tint " + pilha[contexto][varContador].label + ";\n" + "\tint " + pilha[contexto][varBase].label+ ";\n" + "\tint " + pilha[contexto][varTeste].label + ";\n";
+				    adicional += "\t" + pilha[contexto][varContador].label + " = 0;\n" + "\t" + pilha[contexto][varBase].label + " = 0;\n" + "\t" + pilha[contexto][varTeste].label + " = 0;\n" + inicioWhile+":\n";
+				    adicional += "\t" + pilha[contexto][varBase].label + " = " + pilha[contexto][varContador].label + " + " + $3.label + ";\n";
+				    adicional += "\t" + pilha[contexto][$$.label].label + "[" + pilha[contexto][varContador].label + "]" + " = " + pilha[i][$1.label].label + "[" + pilha[contexto][varBase].label + "];\n";
+				    adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + "1;\n"; 
+				    adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + tamanhoNovaString + ";\n";
+				    adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
+					$$.traducao = $3.traducao + $5.traducao + adicional;
 				}				
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");			
@@ -819,122 +754,17 @@ VETOR		: TK_ID '[' E ':' E ']'
 
 int yyparse();
 
-string formaExpressao(string resultado, string operando, string label, string label1, string label2){
-
-	string adicional, tipo = resultado;
-	int i = procuraVariavel(label1);
-	int j = procuraVariavel(label2);
-	if(operando == " < " || operando == " > " || operando == " <= " || operando == " >= " || operando == " == " || operando == " != ")
-		tipo = "int";
-
-	if(pilha[i][label1].tipo != resultado)
-	{
-		string aux = criaAtributo(resultado, "");
-		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label1 + ";\n";
-		adicional = aux2 + "\t" + tipo + " " + label + ";\n\t" + label + " = " + aux + operando + label2 + ";\n";
-	}
-	else if(pilha[j][label2].tipo != resultado)
-	{
-		string aux = criaAtributo(resultado, "");
-		string aux2 = "\t" + resultado + " " + aux + " = " + '(' + resultado + ')' + label2 + ";\n";
-		adicional = aux2+"\t" + tipo + " " + label + ";\n\t" + label + " = " + label1 + operando + aux + ";\n";
-	}
-	else
-		adicional = "\t" + tipo + " " + label + ";\n\t" + label + " = " + label1 + operando + label2 + ";\n";
-
-	return adicional;
-}
-
-string criaLabel(){
-    stringstream aux;
-    static int i = 0;
-    aux << i;
-
-    string temp ("LABEL_");
-    temp = temp + aux.str();
-    i++;
-
-    return temp;
-}
-
-string verificaCastAtribuicao(string tipo1, string tipo2) {
-	if(tipo1 == tipo2)
-		return "";
-	if(tipo1 == "int")
-		return "(int)";
-	else if(tipo1 == "float")
-		return "(float)";
-	else if(tipo1 == "char")
-		return "(char)";
-}
-
-int procuraVariavel(string variavel){
-
-	for(int i = contexto; i >= 0; i--){
-	    if(pilha[i].find(variavel) != pilha[i].end()){
-	        return i;
-	    }
-	}
-	return -1;
-}
-
-string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB){
-	int quant = (sizeof(tabelaCompatibilidade)/4);
-	
-	for (int i = 0; i < quant; i++)
-	{
-		if(tabelaCompatibilidade[i][0] == operador && tabelaCompatibilidade[i][1] == operandoA && tabelaCompatibilidade[i][2] == operandoB)
-		{
-			return tabelaCompatibilidade[i][3];
-		}
-	}
-}
-
-string criaVariavel(){
-    stringstream aux;
-    static int i = 0;
-    aux << i;
-
-    string temp ("t");
-    temp = temp + aux.str();
-
-    i++;
-
-    return temp;
-}
-
-string criaAtributo(string tipo, string traducao){
-	Atributos atributo;
-	atributo.label = criaVariavel();
-	atributo.traducao = traducao;
-	atributo.tipo = tipo;
-	atributo.tamanho = "NULL";
-
-	if(tipo == "string")
-	{
-		stringstream aux;   
-	    aux << traducao.length()-1;
-	    string tamanho;
-	    tamanho = aux.str();
-		atributo.tamanho = tamanho;
-	}
-
-	pilha[contexto][atributo.label] = atributo;
-	pilha[contexto][traducao] = atributo;
-
-	return atributo.label;
-}
-
 int main( int argc, char* argv[] )
 {
-	yyparse();
+	contexto++;
+	map<string, Atributos> tabela;
+	pilha.push_back(tabela);
+	
+	yyparse();	
+	
+	contexto--;
+	pilha.pop_back();	
 	return 0;
 }
 
-void yyerror( string MSG )
-{
-	stringstream aux;
-    aux << linha;
-	cout << MSG + " - Linha: " + aux.str() << endl;
-	exit (0);
-}
+
