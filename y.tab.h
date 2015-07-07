@@ -61,26 +61,29 @@ extern int yydebug;
     TK_FIM = 271,
     TK_ERROR = 272,
     TK_PRINT = 273,
-    TK_READ = 274,
-    TK_IF = 275,
-    TK_ELSE = 276,
-    TK_WHILE = 277,
-    TK_FOR = 278,
-    TK_DO = 279,
-    TK_ARITMETICOS = 280,
-    TK_RELACIONAIS = 281,
-    TK_ANDOR = 282,
-    TK_INCREMENTO = 283,
-    TK_BREAK = 284,
-    TK_MAIOR = 285,
-    TK_MENOR = 286,
-    TK_MAIORIGUAL = 287,
-    TK_MENORIGUAL = 288,
-    TK_IGUAL = 289,
-    TK_DIFERENTE = 290,
-    TK_AND = 291,
-    TK_OR = 292,
-    TK_NEGADO = 293
+    TK_PRINT_LN = 274,
+    TK_READ = 275,
+    TK_IF = 276,
+    TK_ELSE = 277,
+    TK_WHILE = 278,
+    TK_FOR = 279,
+    TK_DO = 280,
+    TK_ELSEIF = 281,
+    TK_ARITMETICOS = 282,
+    TK_RELACIONAIS = 283,
+    TK_ANDOR = 284,
+    TK_INCREMENTO = 285,
+    TK_BREAK = 286,
+    TK_CONTINUE = 287,
+    TK_MAIOR = 288,
+    TK_MENOR = 289,
+    TK_MAIORIGUAL = 290,
+    TK_MENORIGUAL = 291,
+    TK_IGUAL = 292,
+    TK_DIFERENTE = 293,
+    TK_AND = 294,
+    TK_OR = 295,
+    TK_NEGADO = 296
   };
 #endif
 /* Tokens.  */
@@ -100,26 +103,29 @@ extern int yydebug;
 #define TK_FIM 271
 #define TK_ERROR 272
 #define TK_PRINT 273
-#define TK_READ 274
-#define TK_IF 275
-#define TK_ELSE 276
-#define TK_WHILE 277
-#define TK_FOR 278
-#define TK_DO 279
-#define TK_ARITMETICOS 280
-#define TK_RELACIONAIS 281
-#define TK_ANDOR 282
-#define TK_INCREMENTO 283
-#define TK_BREAK 284
-#define TK_MAIOR 285
-#define TK_MENOR 286
-#define TK_MAIORIGUAL 287
-#define TK_MENORIGUAL 288
-#define TK_IGUAL 289
-#define TK_DIFERENTE 290
-#define TK_AND 291
-#define TK_OR 292
-#define TK_NEGADO 293
+#define TK_PRINT_LN 274
+#define TK_READ 275
+#define TK_IF 276
+#define TK_ELSE 277
+#define TK_WHILE 278
+#define TK_FOR 279
+#define TK_DO 280
+#define TK_ELSEIF 281
+#define TK_ARITMETICOS 282
+#define TK_RELACIONAIS 283
+#define TK_ANDOR 284
+#define TK_INCREMENTO 285
+#define TK_BREAK 286
+#define TK_CONTINUE 287
+#define TK_MAIOR 288
+#define TK_MENOR 289
+#define TK_MAIORIGUAL 290
+#define TK_MENORIGUAL 291
+#define TK_IGUAL 292
+#define TK_DIFERENTE 293
+#define TK_AND 294
+#define TK_OR 295
+#define TK_NEGADO 296
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

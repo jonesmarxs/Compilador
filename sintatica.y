@@ -7,8 +7,8 @@ void yyerror(string);
 
 %token TK_NUM_INT TK_NUM_FLOAT TK_TRUE TK_FALSE TK_CHAR TK_STRING
 %token TK_MAIN TK_ID TK_TIPO_INT TK_TIPO_FLOAT TK_TIPO_BOOL TK_TIPO_CHAR TK_TIPO_STRING 
-%token TK_FIM TK_ERROR TK_PRINT TK_READ TK_IF TK_ELSE TK_WHILE TK_FOR TK_DO
-%token TK_ARITMETICOS TK_RELACIONAIS TK_ANDOR TK_INCREMENTO TK_BREAK
+%token TK_FIM TK_ERROR TK_PRINT TK_PRINT_LN TK_READ TK_IF TK_ELSE TK_WHILE TK_FOR TK_DO TK_ELSEIF
+%token TK_ARITMETICOS TK_RELACIONAIS TK_ANDOR TK_INCREMENTO TK_BREAK TK_CONTINUE
 %token TK_MAIOR TK_MENOR TK_MAIORIGUAL TK_MENORIGUAL TK_IGUAL TK_DIFERENTE
 %token TK_AND TK_OR TK_NEGADO 
 
@@ -21,20 +21,14 @@ void yyerror(string);
 
 %%
 
-S			: GLOBAL MAIN {
+S			: MAIN {
 				cout << "#include<stdio.h>\n";
 				cout << "#include<string.h>\n";
 				cout << "#include<iostream>\n\n";
 				cout << "using namespace std;\n\n";
 				cout << "int main(void)\n{\n" ;
-				cout << $1.traducao + "\n" + $2.traducao + "\treturn 0;\n}";
+				cout << $1.traducao + "\treturn 0;\n}";
 			}
-			;
-
-GLOBAL		: DECLARACAO GLOBAL {
-				$$.traducao = $1.traducao + $2.traducao;
-			}
-			| 
 			;
 
 MAIN        : TK_TIPO_INT TK_MAIN '('')' BLOCO {				
@@ -446,28 +440,28 @@ E			: E '.' E {
 					{
 						$$.label = criaAtributo("char","");
 
-						string adicional = "\tchar " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						string adicional = "\tchar " + $$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
 						$$.traducao = $3.traducao + adicional;
 					}
 					else if(pilha[i][$1.label].tipo == "vetor_int" && pilha[i][$1.label].tamanho != "0")
 					{
 						$$.label = criaAtributo("int","");
 
-						string adicional = "\tint " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						string adicional = "\tint " + $$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
 						$$.traducao = $3.traducao + adicional;
 					}
 					else if(pilha[i][$1.label].tipo == "vetor_float" && pilha[i][$1.label].tamanho != "0")
 					{
 						$$.label = criaAtributo("float","");
 
-						string adicional = "\tfloat " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						string adicional = "\tfloat " + $$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
 						$$.traducao = $3.traducao + adicional;
 					}
 					else if(pilha[i][$1.label].tipo == "vetor_bool" && pilha[i][$1.label].tamanho != "0")
 					{
 						$$.label = criaAtributo("bool","");
  
-						string adicional = "\tint " + 	$$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
+						string adicional = "\tint " + $$.label + ";\n\t" + $$.label + " = " + pilha[i][$1.label].label + "[" + $3.label + "];\n";
 						$$.traducao = $3.traducao + adicional;
 					}					
 					else
@@ -500,31 +494,33 @@ E			: E '.' E {
 				$$.traducao = adicional;				
 			}
 			;
-IO			: TK_PRINT E ';' {
+IO			: TK_PRINT_LN E PRINT_MULT ';' {
 				int i;
 				if(i = procuraVariavel($2.label), i != -1){
 					if(pilha[i][$2.label].tipo[0] != 'v'){
 						$$.label = pilha[i][$2.label].label;
-						$$.traducao = $2.traducao + "\tcout << " + $$.label + " << endl" + ";\n";
+						$$.traducao = $2.traducao + "\tcout << " + $$.label + $3.traducao + " << endl" + ";\n";
 					}
 					else {
-						
 						if(pilha[i][$2.label].tamanho != "0"){
-
-						    string varContador = criaAtributo("int","");				  
-						    string varTeste = criaAtributo("int","");
-
-						    string inicioWhile = criaLabel();
-
-						    string adicional = "\tint " + pilha[contexto][varContador].label + ";\n";
-						    adicional += "\tint " + pilha[contexto][varTeste].label + ";\n";
-						    adicional += "\t" + pilha[contexto][varTeste].label + " = 0;\n";
-						    adicional += "\t" + pilha[contexto][varContador].label + " = 0;\n" + inicioWhile + ":\n";
-						    adicional += "\tcout << " + pilha[i][$2.label].label + "[" + pilha[contexto][varContador].label + "] << endl" + ";\n";
-						    adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + "1;\n"; 
-						    adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + pilha[i][$2.label].tamanho + ";\n";
-						    adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
-							
+							string adicional = printVetor(i, $2.label);
+							$$.traducao = $2.traducao + adicional;
+						}	
+					}
+				}
+				else
+					yyerror("\nVARIAVEL NAO DECLARADA");
+			}
+			| TK_PRINT E PRINT_MULT ';' {
+				int i;
+				if(i = procuraVariavel($2.label), i != -1){
+					if(pilha[i][$2.label].tipo[0] != 'v'){
+						$$.label = pilha[i][$2.label].label;
+						$$.traducao = $2.traducao + "\tcout << " + $$.label + $3.traducao + ";\n";
+					}
+					else {
+						if(pilha[i][$2.label].tamanho != "0"){
+							string adicional = printVetor(i, $2.label);
 							$$.traducao = $2.traducao + adicional;
 						}	
 					}
@@ -535,23 +531,8 @@ IO			: TK_PRINT E ';' {
 			| TK_PRINT VETOR ';' {
 				int i;
 				if(i = procuraVariavel($2.label), i != -1){
-
 					if(pilha[i][$2.label].tamanho != "0"){
-
-					    string varContador = criaAtributo("int","");				  
-					    string varTeste = criaAtributo("int","");
-
-					    string inicioWhile = criaLabel();
-
-					    string adicional = "\tint " + pilha[contexto][varContador].label + ";\n";
-					    adicional += "\tint " + pilha[contexto][varTeste].label + ";\n";
-					    adicional += "\t" + pilha[contexto][varTeste].label + " = 0;\n";
-					    adicional += "\t" + pilha[contexto][varContador].label + " = 0;\n" + inicioWhile + ":\n";
-					    adicional += "\tcout << " + pilha[i][$2.label].label + "[" + pilha[contexto][varContador].label + "] << endl" + ";\n";
-					    adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + "1;\n"; 
-					    adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + pilha[i][$2.label].tamanho + ";\n";
-					    adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
-						
+					    string adicional = printVetor(i, $2.label);
 						$$.traducao = $2.traducao + adicional;
 					}
 				}
@@ -559,10 +540,9 @@ IO			: TK_PRINT E ';' {
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
 
-			| TK_READ TK_ID ';' {
+			| TK_READ TK_ID READ_MULT ';' {
 				int i;
 				if(i = procuraVariavel($2.label), i != -1){
-			
 					$$.label = pilha[i][$2.label].label;
 					$$.traducao = "\tcin >> " + $$.label + ";\n";
 				}
@@ -570,6 +550,52 @@ IO			: TK_PRINT E ';' {
 					yyerror("\nVARIAVEL NAO DECLARADA");
 			}
 			;
+
+PRINT_MULT 	: ',' E PRINT_MULT {
+				int i = procuraVariavel($2.label);
+
+				if(i != -1) {
+					$$.label = pilha[i][$2.label].label;
+					$$.traducao = " << " + $$.label + $3.traducao;
+				}
+				else
+					yyerror("\nVARIAVEL NAO DECLARADA\n");
+			}
+			|',' E {
+				int i = procuraVariavel($2.label);
+
+				if(i != -1) {
+					$$.label = pilha[i][$2.label].label;
+					$$.traducao = " << " + $$.label;
+				}
+				else
+					yyerror("\nVARIAVEL NAO DECLARADA\n");
+			}
+			|
+			;
+READ_MULT 	: ',' TK_ID READ_MULT {
+				int i = procuraVariavel($2.label);
+
+				if(i != -1) {
+					$$.label = pilha[i][$2.label].label;
+					$$.traducao = " >> " + $$.label + $3.traducao;
+				}
+				else
+					yyerror("\nERRO: VARIAVEL NAO DECLARADA\n");
+			}
+			|',' TK_ID {
+				int i = procuraVariavel($2.label);
+
+				if(i != -1) {
+					$$.label = pilha[i][$2.label].label;
+					$$.traducao = " >> " + $$.label;
+				}
+				else
+					yyerror("\nERRO: VARIAVEL NAO DECLARADA\n");
+			}
+			|
+			;
+
 CONDICIONAL	: TK_IF '(' E ')' BLOCO {
 
 				int i = procuraVariavel($3.label);
@@ -583,7 +609,7 @@ CONDICIONAL	: TK_IF '(' E ')' BLOCO {
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
 			}
-			| TK_IF '(' E ')' BLOCO TK_ELSE BLOCO {
+			| TK_IF '(' E ')' BLOCO ELSE {
 
 				int i = procuraVariavel($3.label);
 				string labelIf = criaLabel();
@@ -592,10 +618,29 @@ CONDICIONAL	: TK_IF '(' E ')' BLOCO {
 				if (pilha[i][$3.label].tipo == "bool")
 				{
 					string adicional = "\tif(!" + pilha[i][$3.label].label + ") goto " + labelIf + ";\n";					
-					$$.traducao = $3.traducao + adicional + $5.traducao + "\tgoto " + labelElse + ";\n" + labelIf + ":\n" + $7.traducao + labelElse + ":\n";
+					$$.traducao = $3.traducao + adicional + $5.traducao + "\tgoto " + labelElse + ";\n" + labelIf + ":\n" + $6.traducao + labelElse + ":\n";
 				}
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
+			}
+			;
+
+ELSE 		: TK_ELSEIF '(' E ')' BLOCO ELSE {
+				string fimIf = criaLabel();
+				string fimIf2 = criaLabel();
+				int i = procuraVariavel($3.label);
+
+				if (pilha[i][$3.label].tipo == "bool")
+				{
+					string adicional = "\tif(!" + pilha[i][$3.label].label + ") goto " + fimIf + ";\n";					
+					$$.traducao = $3.traducao + adicional + $5.traducao + "\tgoto " + fimIf2  + ";\n" +  fimIf + ":\n" + $6.traducao + fimIf2 + ":\n";
+				}
+				else
+					yyerror("ERRO: OPERACAO INVALIDA");
+			}
+			| TK_ELSE BLOCO
+			{	
+				$$.traducao =  $2.traducao ;				
 			}
 			;
 LOOP		: TK_BREAK ';'
@@ -605,15 +650,27 @@ LOOP		: TK_BREAK ';'
 
 				$$.traducao = "\tgoto " + label + ";\n";
 			}
+			| TK_CONTINUE ';'
+			{
+				string label = criaLabel();
+				pilhaContinue.push_back(label);
+					
+				$$.traducao = "\tgoto " + label + ";\n";
+			}
 			| TK_FOR '(' ATRIBUICAO E ';' E ')' BLOCO
 			{
 				string inicioFor = criaLabel();
 				string fimFor = criaLabel();
+				string labelContinue;
 
-				if(pilhaBreak.size() > 0)
-				{					
+				if(pilhaBreak.size() > 0){					
 					fimFor = pilhaBreak[pilhaBreak.size()-1];
 					pilhaBreak.pop_back();
+				}
+
+				if(pilhaContinue.size() > 0) {					
+					labelContinue = pilhaContinue[pilhaContinue.size()-1] + ":\n";
+					pilhaContinue.pop_back();
 				}
 
 				int i = procuraVariavel($3.label);
@@ -623,7 +680,7 @@ LOOP		: TK_BREAK ';'
 				{
 					string adicional = "\tif(!" + pilha[j][$4.label].label + ") goto " + fimFor + ";\n";
 
-					$$.traducao = $3.traducao + inicioFor + ":\n" + $4.traducao + adicional + $8.traducao + $6.traducao +"\tgoto "+ inicioFor + ";\n"+fimFor + ":\n";
+					$$.traducao = $3.traducao + inicioFor + ":\n" + $4.traducao + adicional + $8.traducao + labelContinue + $6.traducao +"\tgoto "+ inicioFor + ";\n"+fimFor + ":\n";
 				}
 			}
 			| TK_WHILE '(' E ')' BLOCO {
@@ -631,11 +688,16 @@ LOOP		: TK_BREAK ';'
 				int i = procuraVariavel($3.label);			
 				string inicioWhile = criaLabel();
 				string fimWhile = criaLabel();	
+				string labelContinue;
 
-				if(pilhaBreak.size() > 0)
-				{					
+				if(pilhaBreak.size() > 0) {					
 					fimWhile = pilhaBreak[pilhaBreak.size()-1];
 					pilhaBreak.pop_back();
+				}
+
+				if(pilhaContinue.size() > 0) {					
+					labelContinue = pilhaContinue[pilhaContinue.size()-1] + ":\n";
+					pilhaContinue.pop_back();
 				}
 
 				if (pilha[i][$3.label].tipo == "bool")
@@ -643,7 +705,7 @@ LOOP		: TK_BREAK ';'
 					string adicional = "\tif(!" + pilha[i][$3.label].label + ") goto " + fimWhile + ";\n";
 					string adicional2 = "\tif(" + pilha[i][$3.label].label + ") goto " + inicioWhile + ";\n";					
 					
-					$$.traducao = inicioWhile + ":\n" + $3.traducao + adicional + $5.traducao + adicional2 + fimWhile + ":\n";
+					$$.traducao = inicioWhile + ":\n" + $3.traducao + adicional + $5.traducao + labelContinue + adicional2 + fimWhile + ":\n";
 				}
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");
@@ -653,6 +715,7 @@ LOOP		: TK_BREAK ';'
 				int i = procuraVariavel($5.label);	
 				string inicioWhile = criaLabel();
 				string fimWhile = "";
+				string labelContinue;
 
 				if(pilhaBreak.size() > 0)
 				{					
@@ -661,10 +724,15 @@ LOOP		: TK_BREAK ';'
 					pilhaBreak.pop_back();
 				}
 
+				if(pilhaContinue.size() > 0) {					
+					labelContinue = pilhaContinue[pilhaContinue.size()-1] + ":\n";
+					pilhaContinue.pop_back();
+				}
+
 				if (pilha[i][$5.label].tipo == "bool")
 				{
 					string adicional = "\tif(" + pilha[i][$5.label].label + ") goto " + inicioWhile + ";\n"+fimWhile;
-					$$.traducao = inicioWhile + ":\n" + $2.traducao + $5.traducao + adicional;
+					$$.traducao = inicioWhile + ":\n" + $2.traducao + $5.traducao + labelContinue + adicional;
 				}
 				else
 					yyerror("ERRO: OPERACAO INVALIDA");

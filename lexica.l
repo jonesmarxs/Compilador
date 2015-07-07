@@ -35,14 +35,17 @@ INCREMENTO (\+\+|\-\-)
 
 "read"		{yylval.label = yytext; return TK_READ;}
 "print"		{yylval.label = yytext; return TK_PRINT;}
+"println"		{yylval.label = yytext; return TK_PRINT_LN;}
 "if"		{yylval.label = yytext; return TK_IF;}
 "else"		{yylval.label = yytext; return TK_ELSE;}
+"else if"	{yylval.label = yytext; return TK_ELSEIF;}
 "do"		{yylval.label = yytext; return TK_DO;}
 "while"		{yylval.label = yytext; return TK_WHILE;}
 "for"		{yylval.label = yytext; return TK_FOR;}
 "break"		{yylval.label = yytext; return TK_BREAK;}
+"continue"		{yylval.label = yytext; return TK_CONTINUE;}
 
-[\'].[\'] { yylval.label = yytext; return TK_CHAR; }
+[\'].[\'] 	{ yylval.label = yytext; return TK_CHAR; }
 [\"].*[\"] 		{ yylval.label = yytext; return TK_STRING; }
 
 "="				{ return *yytext; }

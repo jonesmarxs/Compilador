@@ -20,6 +20,7 @@ typedef struct atributos
 
 vector<map <string, Atributos> > pilha;
 vector<string> pilhaBreak;
+vector<string> pilhaContinue;
 
 int contexto = -1;
 int linha = 1;
@@ -32,7 +33,27 @@ string formaExpressao(string operando, string resultado, string label, string la
 int procuraVariavel(string variavel);
 string criaLabel();
 void yyerror(string MSG);
+string printVetor(int i, string label);
 
+string printVetor(int i, string label){
+	string varContador = criaAtributo("int","");				  
+	string varTeste = criaAtributo("int","");
+	string constUm = criaAtributo("int", "");
+	string constTamanho = criaAtributo("int", pilha[i][label].tamanho);
+	string inicioWhile = criaLabel();
+
+	string adicional = "\tint " + pilha[contexto][varContador].label + ";\n"+"\t" + pilha[contexto][varContador].label + " = 0;\n";
+	adicional += "\tint " + pilha[contexto][varTeste].label + ";\n" + "\t" + pilha[contexto][varTeste].label + " = 0;\n";
+	adicional += "\tint " + pilha[contexto][constUm].label + ";\n" + "\t" + pilha[contexto][constUm].label + " = 1;\n";
+	adicional += "\tint " + pilha[contexto][constTamanho].label + ";\n" + "\t" + pilha[contexto][constTamanho].label + " = "+ pilha[i][label].tamanho +";\n";
+	adicional += inicioWhile + ":\n";
+	adicional += "\tcout << " + pilha[i][label].label + "[" + pilha[contexto][varContador].label + "] << endl" + ";\n";
+	adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + pilha[contexto][constUm].label + ";\n"; 
+	adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + pilha[contexto][constTamanho].label + ";\n";
+	adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
+
+	return adicional;
+}
 string formaExpressao(string resultado, string operando, string label, string label1, string label2){
 
 	string adicional, tipo = resultado;
