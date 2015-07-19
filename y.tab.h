@@ -47,79 +47,81 @@ extern int yydebug;
   {
     TK_NUM_INT = 258,
     TK_NUM_FLOAT = 259,
-    TK_TRUE = 260,
-    TK_FALSE = 261,
-    TK_CHAR = 262,
-    TK_STRING = 263,
-    TK_MAIN = 264,
-    TK_ID = 265,
-    TK_TIPO_INT = 266,
-    TK_TIPO_FLOAT = 267,
-    TK_TIPO_BOOL = 268,
-    TK_TIPO_CHAR = 269,
-    TK_TIPO_STRING = 270,
-    TK_FIM = 271,
-    TK_ERROR = 272,
-    TK_PRINT = 273,
-    TK_READ = 274,
-    TK_IF = 275,
-    TK_ELSE = 276,
-    TK_WHILE = 277,
-    TK_FOR = 278,
-    TK_DO = 279,
+    TK_TRUE_FALSE = 260,
+    TK_CHAR = 261,
+    TK_STRING = 262,
+    TK_FUNC = 263,
+    TK_RETURN = 264,
+    TK_VOID = 265,
+    TK_MAIN = 266,
+    TK_ID = 267,
+    TK_TIPO = 268,
+    TK_FIM = 269,
+    TK_ERROR = 270,
+    TK_PRINT = 271,
+    TK_PRINT_LN = 272,
+    TK_READ = 273,
+    TK_IF = 274,
+    TK_ELSE = 275,
+    TK_WHILE = 276,
+    TK_FOR = 277,
+    TK_DO = 278,
+    TK_ELSEIF = 279,
     TK_ARITMETICOS = 280,
     TK_RELACIONAIS = 281,
-    TK_ANDOR = 282,
-    TK_INDECREMENTO = 283,
+    TK_AND_OR = 282,
+    TK_INCREMENTO = 283,
     TK_BREAK = 284,
-    TK_MAIOR = 285,
-    TK_MENOR = 286,
-    TK_MAIORIGUAL = 287,
-    TK_MENORIGUAL = 288,
-    TK_IGUAL = 289,
-    TK_DIFERENTE = 290,
-    TK_AND = 291,
-    TK_OR = 292,
-    TK_NEGADO = 293
+    TK_CONTINUE = 285,
+    TK_MAIOR = 286,
+    TK_MENOR = 287,
+    TK_MAIORIGUAL = 288,
+    TK_MENORIGUAL = 289,
+    TK_IGUAL = 290,
+    TK_DIFERENTE = 291,
+    TK_AND = 292,
+    TK_OR = 293,
+    TK_NEGADO = 294
   };
 #endif
 /* Tokens.  */
 #define TK_NUM_INT 258
 #define TK_NUM_FLOAT 259
-#define TK_TRUE 260
-#define TK_FALSE 261
-#define TK_CHAR 262
-#define TK_STRING 263
-#define TK_MAIN 264
-#define TK_ID 265
-#define TK_TIPO_INT 266
-#define TK_TIPO_FLOAT 267
-#define TK_TIPO_BOOL 268
-#define TK_TIPO_CHAR 269
-#define TK_TIPO_STRING 270
-#define TK_FIM 271
-#define TK_ERROR 272
-#define TK_PRINT 273
-#define TK_READ 274
-#define TK_IF 275
-#define TK_ELSE 276
-#define TK_WHILE 277
-#define TK_FOR 278
-#define TK_DO 279
+#define TK_TRUE_FALSE 260
+#define TK_CHAR 261
+#define TK_STRING 262
+#define TK_FUNC 263
+#define TK_RETURN 264
+#define TK_VOID 265
+#define TK_MAIN 266
+#define TK_ID 267
+#define TK_TIPO 268
+#define TK_FIM 269
+#define TK_ERROR 270
+#define TK_PRINT 271
+#define TK_PRINT_LN 272
+#define TK_READ 273
+#define TK_IF 274
+#define TK_ELSE 275
+#define TK_WHILE 276
+#define TK_FOR 277
+#define TK_DO 278
+#define TK_ELSEIF 279
 #define TK_ARITMETICOS 280
 #define TK_RELACIONAIS 281
-#define TK_ANDOR 282
-#define TK_INDECREMENTO 283
+#define TK_AND_OR 282
+#define TK_INCREMENTO 283
 #define TK_BREAK 284
-#define TK_MAIOR 285
-#define TK_MENOR 286
-#define TK_MAIORIGUAL 287
-#define TK_MENORIGUAL 288
-#define TK_IGUAL 289
-#define TK_DIFERENTE 290
-#define TK_AND 291
-#define TK_OR 292
-#define TK_NEGADO 293
+#define TK_CONTINUE 285
+#define TK_MAIOR 286
+#define TK_MENOR 287
+#define TK_MAIORIGUAL 288
+#define TK_MENORIGUAL 289
+#define TK_IGUAL 290
+#define TK_DIFERENTE 291
+#define TK_AND 292
+#define TK_OR 293
+#define TK_NEGADO 294
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
