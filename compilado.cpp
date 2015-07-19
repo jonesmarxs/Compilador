@@ -6,40 +6,37 @@ using namespace std;
 
 int main(void)
 {
-	char t1[0];
-	char t0[0];
-	char t2[6];
-	strcpy(t2,"teste");
-	char t3[6];
-	strcpy(t3,t2);
+	int t3;
+	int t2;
+	int t0 = 10;
+	int t1[t0];
 	int t4;
 	t4 = 0;
-	char t5;
-	t5 = '2';
-	t3[t4] = t5;
-	char t6[7];
-	strcpy(t6,"teste1");
-	char t7[7];
-	strcpy(t7,t6);
+	t3 = t4;
+LABEL_1:
+	int t5;
+	t5 = 10;
+	int t6;
+	t6 = t3 < t5;
+	if(!t6) goto LABEL_0;
+	t1[t3] = t3;
+	goto LABEL_0;
+	t3 = t3 + 1;
+	goto LABEL_1;
+LABEL_0:
+	int t7;
+	t7 = 0;
 	int t8;
 	t8 = 0;
 	int t9;
-	t9 = 2;
-	char t10[3];
-	t10[3] = '\0';
-	int t11;
-	int t12;
-	int t13;
-	t11 = 0;
-	t12 = 0;
-	t13 = 0;
-LABEL_0:
-	t12 = t11 + t8;
-	t10[t11] = t3[t12];
-	t11 = t11 + 1;
-	t13 = t11 < 3;
-	if(t13) goto LABEL_0;
-	char t14[3];
-	strcpy(t14,t10);
+	t9 = 1;
+	int t10;
+	t10 = t0;
+LABEL_3:
+	cout << t1[t7];
+	t7 = t7 + t9;
+	t8 = t7 < t10;
+	if(t8) goto LABEL_3;
+
 	return 0;
 }

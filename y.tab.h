@@ -50,12 +50,12 @@ extern int yydebug;
     TK_TRUE_FALSE = 260,
     TK_CHAR = 261,
     TK_STRING = 262,
-    TK_FUNC = 263,
-    TK_RETURN = 264,
-    TK_VOID = 265,
-    TK_MAIN = 266,
-    TK_ID = 267,
-    TK_TIPO = 268,
+    TK_MAIN = 263,
+    TK_ID = 264,
+    TK_TIPO = 265,
+    TK_FUNC = 266,
+    TK_RETURN = 267,
+    TK_VOID = 268,
     TK_FIM = 269,
     TK_ERROR = 270,
     TK_PRINT = 271,
@@ -90,12 +90,12 @@ extern int yydebug;
 #define TK_TRUE_FALSE 260
 #define TK_CHAR 261
 #define TK_STRING 262
-#define TK_FUNC 263
-#define TK_RETURN 264
-#define TK_VOID 265
-#define TK_MAIN 266
-#define TK_ID 267
-#define TK_TIPO 268
+#define TK_MAIN 263
+#define TK_ID 264
+#define TK_TIPO 265
+#define TK_FUNC 266
+#define TK_RETURN 267
+#define TK_VOID 268
 #define TK_FIM 269
 #define TK_ERROR 270
 #define TK_PRINT 271

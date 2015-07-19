@@ -1,7 +1,8 @@
 main(){
-	string str, b;
-	str = "teste";
-	str[0] = '2';
-	b = "teste1";
-	string c = str[0:2];
+	int i, j, vet[10];
+	for(i = 0; i < 10; i++){
+		vet[i] = i;
+		break;
+	}
+	print vet;
 }
