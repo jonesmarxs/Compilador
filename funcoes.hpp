@@ -18,13 +18,27 @@ typedef struct atributos
 	string tamanho;
 } Atributos;
 
+typedef struct funcoes
+{
+	string nome;
+	string tipo;
+	vector <string> parametros;
+} Funcoes;
+
 vector<map <string, Atributos> > pilha;
 vector<string> pilhaBreak;
 vector<string> pilhaContinue;
+vector <Funcoes> listaFuncoes;
+vector<string> returnVar;
+vector<string> parametros;
+vector<string> parametrosVar;
 
 int contexto = -1;
 int linha = 1;
 
+void verificaParametrosFuncao(int i);
+bool verificaDeclaracaoFuncao();
+void criaFuncao(string nome, string tipo, vector<string> parametros);
 string criaVariavel();
 string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB);
 string criaAtributo(string tipo, string traducao);
@@ -34,6 +48,37 @@ int procuraVariavel(string variavel);
 string criaLabel();
 void yyerror(string MSG);
 string printVetor(int i, string label);
+
+int verificaDeclaracaoFuncao(string label){
+	int i;
+	for(i = 0; i < listaFuncoes.size(); i++)
+		if(listaFuncoes[i].nome == label) {
+			return i;
+		}
+	return -1;
+}
+
+void verificaParametrosFuncao(int i){
+	if(listaFuncoes[i].parametros.size() != parametrosVar.size())
+		yyerror("ERRO: PARAMETROS INCORRETOS\n");
+	else
+		for(int j = 0; j < listaFuncoes[i].parametros.size(); j++)
+			if(listaFuncoes[i].parametros[j] != parametrosVar[j])
+				yyerror("ERRO: PARAMETROS INCORRETOS\n");
+
+	parametrosVar.clear();
+}
+
+void criaFuncao(string nome, string tipo, vector<string> parametros)
+{
+	Funcoes funcao;
+	funcao.nome = nome;
+	funcao.tipo = tipo;
+	funcao.parametros = parametros;
+
+	listaFuncoes.push_back(funcao);
+}
+
 
 string printVetor(int i, string label){
 	string varContador = criaAtributo("int","");				  
@@ -47,13 +92,15 @@ string printVetor(int i, string label){
 	adicional += "\tint " + pilha[contexto][constUm].label + ";\n" + "\t" + pilha[contexto][constUm].label + " = 1;\n";
 	adicional += "\tint " + pilha[contexto][constTamanho].label + ";\n" + "\t" + pilha[contexto][constTamanho].label + " = "+ pilha[i][label].tamanho +";\n";
 	adicional += inicioWhile + ":\n";
-	adicional += "\tcout << " + pilha[i][label].label + "[" + pilha[contexto][varContador].label + "] << endl" + ";\n";
+	adicional += "\tcout << " + pilha[i][label].label + "[" + pilha[contexto][varContador].label + "]" + ";\n";
 	adicional += "\t" + pilha[contexto][varContador].label + " = " + pilha[contexto][varContador].label + " + " + pilha[contexto][constUm].label + ";\n"; 
 	adicional += "\t" + pilha[contexto][varTeste].label + " = " + pilha[contexto][varContador].label + " < " + pilha[contexto][constTamanho].label + ";\n";
 	adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
 
 	return adicional;
 }
+
+
 string formaExpressao(string resultado, string operando, string label, string label1, string label2){
 
 	string adicional, tipo = resultado;

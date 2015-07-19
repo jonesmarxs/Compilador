@@ -15,7 +15,7 @@ RELACIONAIS (==|!=|>=|<=|<|>)
 ANDOR (&&|\|\|)
 ARITMETICOS [+\-*/]
 INCREMENTO (\+\+|\-\-)
-
+TIPOS ("int"|"float"|"bool"|"char"|"string")
 %%
 
 "\n"		{linha++;}
@@ -24,14 +24,9 @@ INCREMENTO (\+\+|\-\-)
 
 "main"		{return TK_MAIN;}
 
-"int"		{yylval.label = yytext; return TK_TIPO_INT;}
-"float"		{yylval.label = yytext; return TK_TIPO_FLOAT;}
-"bool"		{yylval.label = yytext; return TK_TIPO_BOOL;}
-"char"		{yylval.label = yytext; return TK_TIPO_CHAR;}
-"string"	{yylval.label = yytext; return TK_TIPO_STRING;}
+{TIPOS}		{yylval.label = yytext; return TK_TIPO;}
 
-"true"		{yylval.label = yytext; return TK_TRUE;}
-"false"		{yylval.label = yytext; return TK_FALSE;}
+"true"|"false" 	{yylval.label = yytext; return TK_TRUE_FALSE;}
 
 "read"		{yylval.label = yytext; return TK_READ;}
 "print"		{yylval.label = yytext; return TK_PRINT;}
@@ -43,7 +38,10 @@ INCREMENTO (\+\+|\-\-)
 "while"		{yylval.label = yytext; return TK_WHILE;}
 "for"		{yylval.label = yytext; return TK_FOR;}
 "break"		{yylval.label = yytext; return TK_BREAK;}
-"continue"		{yylval.label = yytext; return TK_CONTINUE;}
+"continue"	{yylval.label = yytext; return TK_CONTINUE;}
+"def"		{return TK_FUNC;}
+"void"		{yylval.label = yytext; return TK_VOID;}
+"return"	{return TK_RETURN;}
 
 [\'].[\'] 	{ yylval.label = yytext; return TK_CHAR; }
 [\"].*[\"] 		{ yylval.label = yytext; return TK_STRING; }
@@ -52,7 +50,7 @@ INCREMENTO (\+\+|\-\-)
 
 {ARITMETICOS}	{ yylval.label = yytext; return TK_ARITMETICOS; }
 {RELACIONAIS}	{ yylval.label = yytext; return TK_RELACIONAIS; }
-{ANDOR}			{ yylval.label = yytext; return TK_ANDOR; }
+{ANDOR}			{ yylval.label = yytext; return TK_AND_OR; }
 "!"				{yylval.label = yytext; return TK_NEGADO;}
 {INCREMENTO}	{yylval.label = yytext; return TK_INCREMENTO;}
 
