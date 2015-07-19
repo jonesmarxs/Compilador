@@ -1,25 +1,35 @@
 #include <string.h>
 #include <iostream>
 #include <utility>
+#define QUANT 61
 
 using namespace std;
 
-string tabelaCompatibilidade[52][4] = { 					{"aritmeticos","int","int","int"},
+string tabelaCompatibilidade[QUANT][4] = { 					{"aritmeticos","int","int","int"},
 										{"aritmeticos","int","float","float"},
 										{"aritmeticos","int","bool","erro"},
 										{"aritmeticos","int","char","char"},
+										{"aritmeticos","int","string","erro"},
 										{"aritmeticos","float","int","float"},
 										{"aritmeticos","float","float","float"},
 										{"aritmeticos","float","bool","erro"},
 										{"aritmeticos","float","char","char"},
+										{"aritmeticos","float","string","erro"},
 										{"aritmeticos","bool","int","erro"},
 										{"aritmeticos","bool","float","erro"},
 										{"aritmeticos","bool","bool","erro"},
 										{"aritmeticos","bool","char","erro"},
+										{"aritmeticos","bool","string","erro"},
                                                                                 {"aritmeticos","char","int","char"},
                                                                                 {"aritmeticos","char","float","char"},
                                                                                 {"aritmeticos","char","bool","erro"},
                                                                                 {"aritmeticos","char","char","char"},
+                                                                                {"aritmeticos","char","string","erro"},
+                                                                                {"aritmeticos","string","int","erro"},
+                                                                                {"aritmeticos","string","float","erro"},
+                                                                                {"aritmeticos","string","bool","erro"},
+                                                                                {"aritmeticos","string","char","erro"},
+                                                                                {"aritmeticos","string","string","erro"},
 										{"RELACIONAIS","int","int","int"},
 										{"RELACIONAIS","int","float","float"},
 										{"RELACIONAIS","int","bool","erro"},

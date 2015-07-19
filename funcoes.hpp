@@ -48,6 +48,14 @@ int procuraVariavel(string variavel);
 string criaLabel();
 void yyerror(string MSG);
 string printVetor(int i, string label);
+string intToString(int tamanho);
+
+string intToString(int tamanho){
+	stringstream tamanhoS;   
+    tamanhoS << tamanho;
+    string str = tamanhoS.str();
+	return str;
+}
 
 int verificaDeclaracaoFuncao(string label){
 	int i;
@@ -160,10 +168,8 @@ int procuraVariavel(string variavel){
 	return -1;
 }
 
-string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB){
-	int quant = (sizeof(tabelaCompatibilidade)/4);
-	
-	for (int i = 0; i < quant; i++)
+string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB){	
+	for (int i = 0; i < QUANT; i++)
 	{
 		if(tabelaCompatibilidade[i][0] == operador && tabelaCompatibilidade[i][1] == operandoA && tabelaCompatibilidade[i][2] == operandoB)
 		{
