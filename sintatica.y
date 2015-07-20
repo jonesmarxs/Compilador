@@ -21,14 +21,23 @@ void yyerror(string);
 
 %%
 
-S			: MAIN {
+S			: GLOBAL FUNC MAIN {
 				cout << "#include<stdio.h>\n";
 				cout << "#include<string.h>\n";
 				cout << "#include<iostream>\n\n";
-				cout << "using namespace std;\n\n";
+				cout << "using namespace std;\n";
+				cout << "\n" + $1.traducao;
+				cout << $2.traducao << endl;
 				cout << "int main(void)\n{\n" ;
-				cout << $1.traducao + "\treturn 0;\n}";
+				cout << $3.traducao + "\treturn 0;\n}";
 			}
+			;
+
+GLOBAL 		: DECLARACAO GLOBAL
+			{
+				$$.traducao =  $1.traducao + $2.traducao + "\n" ;				
+			}
+			| 
 			;
 
 MAIN  : TK_MAIN '('')' BLOCO {				
@@ -36,6 +45,87 @@ MAIN  : TK_MAIN '('')' BLOCO {
 			}
 			;
 
+FUNC        : FUNC TK_FUNC TK_TIPO TK_ID '(' FUNCDECLAR ')' BLOCO 
+			{			
+				string aux = $3.label + " " + $4.label + "(" + $6.traducao + ")\n{\n";
+				
+				//Verifica se já existe uma função com o mesmo nome
+				for(int i = 0; i < listaFuncoes.size(); i++)										
+					if(listaFuncoes[i].nome == $4.label)
+						yyerror("NOME DE FUNCAO EXISTENTE");						
+
+				//verificando o retorno
+				if( returnVar.size() == 0)
+					yyerror("FUNCAO SEM RETORNO");
+
+				for(int i = 0; i < returnVar.size(); i++)
+					if(returnVar[i] != $3.label)
+						yyerror("TIPO INCOMPATIVEL");					
+
+				criaFuncao($4.label, $3.label, parametros);
+
+				returnVar.clear();
+				parametros.clear();
+				parametrosVar.clear();
+
+				if($1.traducao[0] == '\t')
+					$$.traducao = aux + $8.traducao + "}\n\n"; 
+				else
+					$$.traducao = aux + $8.traducao + "}\n\n" +$1.traducao; 
+				
+			}
+			| FUNC TK_FUNC TK_VOID TK_ID '(' FUNCDECLAR ')' BLOCO 
+			{	
+				string aux = $3.label + " " + $4.label + "(" + $6.traducao + ")\n{\n";
+
+				//verificando o retorno
+				if( returnVar.size() != 0)
+					yyerror("FUNCAO VOID COM RETORNO");
+
+				criaFuncao($4.label, $3.label, parametros);
+				returnVar.clear();
+				parametros.clear();
+				parametrosVar.clear();
+
+				if($1.traducao[0] == '\t')
+					$$.traducao = aux + $8.traducao + "}\n\n"; 
+				else
+					$$.traducao = aux + $8.traducao + "}\n\n" +$1.traducao;
+			}
+			|
+			;
+
+FUNCDECLAR	: TK_TIPO TK_ID ',' FUNCDECLAR
+			{	
+				parametros.push_back($1.label);				
+
+				for(int i = 0; i < parametrosVar.size(); i++)
+				{
+					if(parametrosVar[i] == $2.label)
+						yyerror("VARIAVEL JA DECLARADA");
+				}
+
+				parametrosVar.push_back($2.label);	
+			
+				$$.label = criaAtributo($1.label, $2.label);
+				$$.traducao = $2.traducao + $1.label + " " +$$.label+ ", "+ $4.traducao;				
+			}
+			| TK_TIPO TK_ID
+			{ 
+				parametros.push_back($1.label);				
+
+				for(int i = 0; i < parametrosVar.size(); i++)
+				{
+					if(parametrosVar[i] == $2.label)
+						yyerror("VARIAVEL JA DECLARADA");
+				}
+
+				parametrosVar.push_back($2.label);	
+				$$.label = criaAtributo($1.label, $2.label);
+				$$.traducao = $2.traducao + $1.label + " " +$$.label;				
+			}
+			|
+			;
 BLOCO		: {	contexto++;
 				map<string, Atributos> tabela;
 				pilha.push_back(tabela);
@@ -51,6 +141,12 @@ BLOCO		: {	contexto++;
 
 COMANDOS	: IO {
 				$$.traducao = $1.traducao;
+			}
+			| RETORNO {
+				$$.traducao = $1.traducao;
+			}
+			| RETORNO COMANDOS {
+				$$.traducao = $1.traducao + $2.traducao;
 			}
 			| E  COMANDOS {
 				$$.traducao = $1.traducao + $2.traducao;
@@ -521,8 +617,14 @@ E			: E '.' E {
 				adicional += "\tif(" + pilha[contexto][varTeste].label + ") goto " + inicioWhile + ";\n";
 				$$.traducao = $3.traducao + $5.traducao + adicional;		
 			}
-			;				
-
+			;
+RETORNO:	TK_RETURN E ';'
+			{
+				int i = procuraVariavel($2.label);				
+				returnVar.push_back(pilha[i][$2.label].tipo);
+				$$.traducao = "\treturn " + $2.label + ";\n";
+			}				
+			;
 PARAMETRO: E ',' PARAMETRO {	
 				$$.label = $1.traducao + $3.label;
 				int i = procuraVariavel($1.label);
@@ -536,7 +638,7 @@ PARAMETRO: E ',' PARAMETRO {
 				parametrosVar.push_back(pilha[i][$1.label].tipo);
 				$$.traducao = pilha[i][$1.label].label ;
 			}
-			|;
+			|
 			;
 IO			: TK_PRINT_LN E PRINT_MULT ';' {
 				int i;
