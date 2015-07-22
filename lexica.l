@@ -42,7 +42,7 @@ TIPOS ("int"|"float"|"bool"|"char"|"string")
 "def"		{return TK_FUNC;}
 "void"		{yylval.label = yytext; return TK_VOID;}
 "return"	{return TK_RETURN;}
-
+["//"].*	{}
 [\'].[\'] 	{ yylval.label = yytext; return TK_CHAR; }
 [\"].*[\"] 		{ yylval.label = yytext; return TK_STRING; }
 
@@ -54,7 +54,7 @@ TIPOS ("int"|"float"|"bool"|"char"|"string")
 "!"				{yylval.label = yytext; return TK_NEGADO;}
 {INCREMENTO}	{yylval.label = yytext; return TK_INCREMENTO;}
 
-[(){}[\];,:]		{ return *yytext; }
+[(){}[\];,:]	{ return *yytext; }
 
 "."				{ return *yytext; }
 

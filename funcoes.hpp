@@ -16,6 +16,7 @@ typedef struct atributos
 	string traducao;
 	string tipo;
 	string tamanho;
+	vector<string> dimensao;
 } Atributos;
 
 typedef struct funcoes
@@ -37,7 +38,7 @@ int contexto = -1;
 int linha = 1;
 
 void verificaParametrosFuncao(int i);
-bool verificaDeclaracaoFuncao();
+int verificaDeclaracaoFuncao(string label);
 void criaFuncao(string nome, string tipo, vector<string> parametros);
 string criaVariavel();
 string verificaCompatibilidadeVariaveis(string operador, string operandoA, string operandoB);

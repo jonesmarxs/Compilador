@@ -1,7 +1,5 @@
 main(){
-	string str, b;
-	str = "teste";
-	str[0] = '2';
-	b = "teste1";
-	string c = str[0:2];
+	string a, b, c;
+	read a, b, c;
+	println a, b, c;
 }
