@@ -1,0 +1,66 @@
+main(){
+	string a, b, c;
+	read a, b, c;
+	println a, b, c;
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+main(){
+	int mat[2][2];
+	int cont = 0;
+	for(int i = 0; i < 2; i++){
+		for(int j = 0; j < 2; j++){
+			mat[i][j] = cont++;
+			println mat[i][j];
+		}
+	}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+def int funcao(int a){
+	int retorno = a*a;
+	return retorno;
+}
+main(){
+	int a = 2;
+	println funcao(a);
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+main(){
+	int vet[10];
+	for(int i = 0; i < 10; i++){
+		vet[i] = i;
+		println vet[i];
+	}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+main(){
+	int vet[2][2];
+	for(int i = 0; i < 2; i++){
+		for(int j = 0; j < 2; j++){
+			vet[i][j] = i;
+			print vet[i][j];
+		}
+		println ' ';
+	}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+main(){
+	int vet[2][2][2];
+	for(int i = 0; i < 2; i++){
+		for(int j = 0; j < 2; j++){
+			for(int k = 0; k < 2; k++){
+				vet[i][j][k] = i;
+				print vet[i][j][k];
+			}
+			println ' ';
+		}
+		println ' ';
+	}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+int global;
+main(){
+	global = 2;
+	println global;
+}
+
+

@@ -769,7 +769,7 @@ IO			: TK_PRINT_LN E PRINT_MULT ';' {
 				if(i = procuraVariavel($2.label), i != -1){
 					if(pilha[i][$2.label].tipo[0] != 'v') {
 						$$.label = pilha[i][$2.label].label;
-						$$.traducao = $2.traducao + "\tcout << " + $$.label + ";\n" + $3.traducao + "\tcout << endl;\n";
+						$$.traducao = $2.traducao + "\tcout << " + $$.label + ";\n" +  "\tcout << endl;\n";
 					}
 					else {
 						if(pilha[i][$2.label].tamanho != "0") {

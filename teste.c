@@ -1,9 +1,11 @@
 #include<stdio.h>
 #include<string.h>
-#include <iostream>
+
+using namespace std;
 
 int main(void)
 {
-	char a = 'a';
-	std::cout<<a<<endl;
+	int i = 2;
+	int j = 2;
+	int mat[i][j];
 }
